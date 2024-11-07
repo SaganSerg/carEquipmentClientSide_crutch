@@ -1,0 +1,1 @@
+const getSMSCodeForRegistrationByTelephone = '/api/getSMSCodeForRegistrationByTelephone'

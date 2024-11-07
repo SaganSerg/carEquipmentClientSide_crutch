@@ -1,0 +1,67 @@
+<p>To display the test results, press Ctrl+Shift+K for the FireFox browser. And click the Tests button</p>
+
+<fieldset>
+    <legend>
+        get SMS code
+    </legend>
+    <label class="buttonTest">
+        This is an error in sms-service
+        <button id="getSMSserviceSMSErrTest" data-testSet="">
+            Launch test
+        </button>
+    </label>
+    <label class="buttonTest">
+        This is an unhandled error
+        <button id="getSMSRealErrTest" data-testSet="getSMSRealErrTest">
+            Launch test
+        </button>
+    </label>
+    <label class="buttonTest">
+        This is a common errors
+        <button id="getSMSTest" data-testSet="getSMSTest">
+            Launch test
+        </button>
+    </label>
+</fieldset>
+
+<fieldset>
+    <legend>
+        Test for registration by phone
+    </legend>
+    <label class="buttonTest">
+        This is an error from dated sms
+        <button id="ownerRegistrationOldSMSTest" data-testSet="ownerRegistrationOldSMSTest">
+            Launch test
+        </button>
+    </label>
+    <label class="buttonTest">
+        This is a common error
+        <button id="ownerRegistrationTest" data-testSet="ownerRegistrationTest">
+            Launch test
+        </button>
+    </label>
+</fieldset>
+<fieldset>
+    <legend>
+        Test for check token
+    </legend>
+    <label class="buttonTest">
+        This is a common error
+        <button id="checkTokenTest" data-testSet="checkTokenTest">
+            Launch test
+        </button>
+    </label>
+</fieldset>
+
+
+<script src="/js/start.js"></script>
+<script src="/js/ownerRegistrationStart.js"></script>
+<script src="/js/ownerRegistrationOldSMSTest.js"></script>
+<script src="/js/ownerRegistrationTest.js"></script>
+<script src="/js/getSMSStart.js"></script>
+<script src="/js/getSMSserviceSMSErrTest.js"></script>
+<script src="/js/getSMSRealErrTest.js"></script>
+<script src="/js/getSMSTest.js"></script>
+<script src="/js/checkTokenStart.js"></script>
+<script src="/js/checkTokenTest.js"></script>
+<script src="/js/finish.js"></script>

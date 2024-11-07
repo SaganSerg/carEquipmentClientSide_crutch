@@ -1,0 +1,1 @@
+const checkTokenUri = `/api/checkToken`
