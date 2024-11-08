@@ -49,7 +49,7 @@ url: "http://localhost:3000/api/getSMSCodeForRegistrationByTelephone"
 
 /* 
 если мы извлекли его .json() в первом then
-во втором then будет уже объект { result: "ERR", discription: "the request JSON structure does not match URL", responseCode: "0001000" }
+во втором then будет уже объект { result: "ERR", description: "the request JSON structure does not match URL", responseCode: "0001000" }
 */
 function toDoPostJSONTest(uri, body, firstThenFun, secondThenFun, thirdThenFun, timeOver) {
 	if (typeof body !== "object") return console.error('The body argument is not object')

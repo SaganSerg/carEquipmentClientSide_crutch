@@ -8,13 +8,13 @@ globalObj.getSMSserviceSMSErrTest = [
 		}
 		, firstThenFun: mockFunction
 		, secondThenFun: (commits) => {
-			const { result, discription, responseCode } = commits
+			const { result, description, responseCode } = commits
 			const API = {
 				"result": 'ERR',
-				"discription": "SMS in not sent. Something went wrong",
+				"description": "SMS in not sent. Something went wrong",
 				"responseCode": "0011000",
 			}
-            console.log((API.responseCode == responseCode), startOfComment, discription)
+            console.log((API.responseCode == responseCode), startOfComment, description)
 			return [(API.responseCode == responseCode), `${startOfMessage} неправильный формат ответа когда есть повторная отправка смс`]
 		}
 		, thirdThenFun: mockFunction

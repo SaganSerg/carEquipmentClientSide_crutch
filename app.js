@@ -544,28 +544,28 @@ app.post('/api/getSMSCodeForRegistrationByTelephone', (req, res, next) => {
     const body = req?.body, telephoneNumber = body?.telephoneNumber
     if (!telephoneNumber) return res.status(200).json({
         "result": 'ERR',
-        "discription": "the request JSON structure does not match URL",
+        "description": "the request JSON structure does not match URL",
         "responseCode": "0001000"
     })
     // так как в дальнейшем номер телефона потребуется именно в виде строки, то в число преорбазовываю только в нужных местах
     const telephoneNumberLength = telephoneNumber.length
     if (isNaN(Number(telephoneNumber)) || (telephoneNumberLength < telephoneNumberMin || telephoneNumberLength > telephoneNumberMax)) return res.status(200).json({
         "result": 'ERR',
-        "discription": "telephoneNumber is not format",
+        "description": "telephoneNumber is not format",
         "responseCode": "0001002",
     })
     db.run('SELECT * FROM telephones WHERE telephone_number = ?', [telephoneNumber], (err, selectTelephonesRows) => {
         // [] -- данное значение имеет selectTelephonesRows если в базе ничего не найдено
         if (err || selectTelephonesRows.length > 1) return res.status(200).json({
             "result": 'ERR',
-            "discription": `Something went wrong${addTextInComment('ошибка БД SELECT * FROM telephones WHERE telephone_number = ?')}`,
+            "description": `Something went wrong${addTextInComment('ошибка БД SELECT * FROM telephones WHERE telephone_number = ?')}`,
             "responseCode": "0001003",
         })
         if (!selectTelephonesRows.length) { // это означает, что ранее не было НИ ОДНОГО запроса для этого номера телефона, поэтому можно ничего не проверять
             db.run('INSERT INTO users () VALUE ()', [], (err, insertUsersRows) => {
                 if (err) return res.status(200).json({
                     "result": 'ERR',
-                    "discription": `Something went wrong${addTextInComment('ошибка БД INSERT INTO users () VALUE ()')}`,
+                    "description": `Something went wrong${addTextInComment('ошибка БД INSERT INTO users () VALUE ()')}`,
                     "responseCode": "0001003",
                 })
                 const userId = insertUsersRows.insertId
@@ -575,13 +575,13 @@ app.post('/api/getSMSCodeForRegistrationByTelephone', (req, res, next) => {
                         db.run('DELETE FROM users WHERE user_id = ?', [userId]) // сюда нужно будет передать функцию которая будет записывать логи с ошибками
                         return res.status(200).json({
                             "result": 'ERR',
-                            "discription": "This phone number is already registered in the process of registering other requests",
+                            "description": "This phone number is already registered in the process of registering other requests",
                             "responseCode": "0011002",
                         })
                     }
                     if (err) return res.status(200).json({
                         "result": 'ERR',
-                        "discription": `Something went wrong${addTextInComment('ошибка БД INSERT INTO telephones (telephone_number, user_id) VALUES (?, ?)')}`,
+                        "description": `Something went wrong${addTextInComment('ошибка БД INSERT INTO telephones (telephone_number, user_id) VALUES (?, ?)')}`,
                         "responseCode": "0001003",
                     })
                     smsGenerator(req, res, next, insertTelephoneRows.insertId, telephoneNumber, app)
@@ -592,12 +592,12 @@ app.post('/api/getSMSCodeForRegistrationByTelephone', (req, res, next) => {
             db.run('SELECT * FROM smscodes WHERE telephone_id = ?', [selectTelephonesRows[0].telephone_id], (err, selectSmsCodeRows) => {
                 if (err) return res.status(200).json({
                     "result": 'ERR',
-                    "discription": `Something went wrong${addTextInComment('ошибка БД SELECT * FROM smscodes WHERE telephone_id = ?')}`,
+                    "description": `Something went wrong${addTextInComment('ошибка БД SELECT * FROM smscodes WHERE telephone_id = ?')}`,
                     "responseCode": "0001003",
                 })
                 if (selectSmsCodeRows.length) return res.status(200).json({
                     "result": 'ERR',
-                    "discription": `For this telephone number the SMS request has already been made${addTextInComment('where selectSmsCodeRows.length')}`,
+                    "description": `For this telephone number the SMS request has already been made${addTextInComment('where selectSmsCodeRows.length')}`,
                     "responseCode": "0011001",
                 })
                 smsGenerator(req, res, next, selectTelephonesRows[0].telephone_id, telephoneNumber, app)
@@ -607,57 +607,57 @@ app.post('/api/getSMSCodeForRegistrationByTelephone', (req, res, next) => {
     })
 })
 
-app.post('/api/telephonOwnerRegistration', (req, res, next) => {
-    const body = req?.body, telephoneNumber = body?.telephoneNumber, SMSСode = body?.SMSСode, userName = body?.userName
+app.post('/api/telephoneOwnerRegistration', (req, res, next) => {
+    const body = req?.body, telephoneNumber = body?.telephoneNumber, smsCode = body?.smsCode, userName = body?.userName
     // тест готов
-    if (!telephoneNumber || !SMSСode) return res.status(200).json({
+    if (!telephoneNumber || !smsCode) return res.status(200).json({
         "result": 'ERR',
-        "discription": "the request JSON structure does not match URL",
+        "description": "the request JSON structure does not match URL",
         "responseCode": "0001000"
     })
     const telephoneNumberLength = telephoneNumber.length
     // тест готов
     if (isNaN(Number(telephoneNumber)) || (telephoneNumberLength < telephoneNumberMin || telephoneNumberLength > telephoneNumberMax)) return res.status(200).json({
         "result": 'ERR',
-        "discription": "telephoneNumber is not format",
+        "description": "telephoneNumber is not format",
         "responseCode": "0001002",
     })
     // тест готов
-    if (SMSСode.length !== smsCodeNumberOfCharacters) return res.status(200).json({
+    if (smsCode.length !== smsCodeNumberOfCharacters) return res.status(200).json({
         "result": 'ERR',
-        "discription": `SMS code is wrong${addTextInComment('длина кода не равна должной')}`,
+        "description": `SMS code is wrong${addTextInComment('длина кода не равна должной')}`,
         "responseCode": "0021001",
     })
     // тест готов
     if (userName && userName.length > maxLenghtOfUserName) return res.status(200).json({
         "result": 'ERR',
-        "discription": "Username is too long",
+        "description": "Username is too long",
         "responseCode": "0021002",
     })
     db.run('SELECT * FROM telephones WHERE telephone_number = ?', [telephoneNumber], (err, selectTelephonesRows) => {
         if (err || selectTelephonesRows.length > 1) return res.status(200).json({
             "result": 'ERR',
-            "discription": `Something went wrong${addTextInComment('ощибка БД SELECT * FROM telephones WHERE telephone_number = ?')}`,
+            "description": `Something went wrong${addTextInComment('ощибка БД SELECT * FROM telephones WHERE telephone_number = ?')}`,
             "responseCode": "0001003",
         })
         // тест готов
         if (!selectTelephonesRows.length) return res.status(200).json({
             "result": 'ERR',
-            "discription": "telephoneNumber is not registration",
+            "description": "telephoneNumber is not registration",
             "responseCode": "0021000",
         })
         const now = new Date()
         db.run('SELECT * FROM smscodes WHERE telephone_id = ? AND smscode_timeLastAttempt > ?', [selectTelephonesRows[0].telephone_id, getTimeForMySQL(now.setMilliseconds(now.getMilliseconds() - deleteSmsTime))], (err, selectSmsCodeRows) => {
             if (err || selectSmsCodeRows.length > 1) return res.status(200).json({
                 "result": 'ERR',
-                "discription": `Something went wrong${addTextInComment('ощибка БД SELECT * FROM smscodes WHERE telephone_id = ?')}`,
+                "description": `Something went wrong${addTextInComment('ощибка БД SELECT * FROM smscodes WHERE telephone_id = ?')}`,
                 "responseCode": "0001003",
             })
 
             // тест готов
             if (!selectSmsCodeRows.length) return res.status(200).json({
                 "result": 'ERR',
-                "discription": `SMS code is wrong${addTextInComment('в таблице smscodes записи для данного телефона нет')}`,
+                "description": `SMS code is wrong${addTextInComment('в таблице smscodes записи для данного телефона нет')}`,
                 "responseCode": "0021001",
             })
 
@@ -665,10 +665,10 @@ app.post('/api/telephonOwnerRegistration', (req, res, next) => {
             console.log('this is a smscode from rows')
             console.log(selectSmsCodeRows[0].smscode_value)
             console.log('this is SMScode from request')
-            console.log(SMSСode)
-            if (selectSmsCodeRows[0].smscode_value != SMSСode) return res.status(200).json({
+            console.log(smsCode)
+            if (selectSmsCodeRows[0].smscode_value != smsCode) return res.status(200).json({
                 "result": 'ERR',
-                "discription": `SMS code is wrong${addTextInComment('код смс не соответсвует')}`,
+                "description": `SMS code is wrong${addTextInComment('код смс не соответсвует')}`,
                 "responseCode": "0021001",
             })
             const userId = selectTelephonesRows[0].user_id
@@ -676,13 +676,13 @@ app.post('/api/telephonOwnerRegistration', (req, res, next) => {
                 if (err?.code === "ER_DUP_ENTRY") {
                     return res.status(200).json({
                         "result": 'ERR',
-                        "discription": "the owner was already registered",
+                        "description": "the owner was already registered",
                         "responseCode": "0021002",
                     })
                 }
                 if (err) return res.status(200).json({
                     "result": 'ERR',
-                    "discription": `Something went wrong${addTextInComment('ощибка БД INSERT INTO owners (user_id) VALUES (?)')}`,
+                    "description": `Something went wrong${addTextInComment('ощибка БД INSERT INTO owners (user_id) VALUES (?)')}`,
                     "responseCode": "0001003",
                 })
                 const userAgent = req?.headers['user-agent'] ?? 'Unknown'
@@ -691,7 +691,7 @@ app.post('/api/telephonOwnerRegistration', (req, res, next) => {
                         db.run('DELETE FROM owners WHERE owner_id = ?', [insertOwnersRows.insertId])
                         return res.status(200).json({
                             "result": 'ERR',
-                            "discription": `Something went wrong${addTextInComment('ощибка БД INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)')}`,
+                            "description": `Something went wrong${addTextInComment('ощибка БД INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)')}`,
                             "responseCode": "0001003",
                         })
                     }
@@ -707,7 +707,7 @@ app.post('/api/telephonOwnerRegistration', (req, res, next) => {
                                 db.run('DELETE FROM connectons WHERE connection_id = ?', [connectionId])
                                 return res.status(200).json({
                                     "result": 'ERR',
-                                    "discription": `Something went wrong${addTextInComment('ощибка БД UPDATE users SET user_name = ? WHERE user_id = ?')}",
+                                    "description": `Something went wrong${addTextInComment('ощибка БД UPDATE users SET user_name = ? WHERE user_id = ?')}",
                                     "responseCode": "0001003`,
                                 })
                             }
@@ -716,7 +716,7 @@ app.post('/api/telephonOwnerRegistration', (req, res, next) => {
                         return res.status(200).json(
                             {
                                 "result": 'OK',
-                                "discription": "Owner is registered by telephone",
+                                "description": "Owner is registered by telephone",
                                 "responseCode": "0020000",
                                 token,
                                 longToken,
@@ -728,7 +728,7 @@ app.post('/api/telephonOwnerRegistration', (req, res, next) => {
                         return res.status(200).json(
                             {
                                 "result": 'OK',
-                                "discription": "Owner is registered by telephone",
+                                "description": "Owner is registered by telephone",
                                 "responseCode": "0020000",
                                 token,
                                 longToken,
@@ -747,7 +747,7 @@ app.post(`/api/checkToken`, (req, res, next) => {
     const body = req?.body, token = body?.token
     if (!token) return res.status(200).json({
         "result": 'ERR',
-        "discription": "the request JSON structure does not match URL",
+        "description": "the request JSON structure does not match URL",
         "responseCode": "0001000"
     })
     jwt.verify(token, credentials.tokenSecret, (err, decoded) => {
@@ -755,7 +755,7 @@ app.post(`/api/checkToken`, (req, res, next) => {
             return res.status(200).json(
                 {
                     "result": 'ERR',
-                    "discription": "Token is wrong",
+                    "description": "Token is wrong",
                     "responseCode": "0001001",
                 }
             )
@@ -763,23 +763,23 @@ app.post(`/api/checkToken`, (req, res, next) => {
         db.run('SELECT * FROM users WHERE user_id =?', [decoded.userId], (err, selectUsersRows) => {
             if (err) return res.status(200).json({
                 "result": 'ERR',
-                "discription": `Something went wrong${addTextInComment('ощибка БД SELECT * FROM users WHERE user_id =?')}`,
+                "description": `Something went wrong${addTextInComment('ощибка БД SELECT * FROM users WHERE user_id =?')}`,
                 "responseCode": "0001003",
             })
             if (selectUsersRows.length > 1) return res.status(200).json({
                 "result": 'ERR',
-                "discription": `Something went wrong${addTextInComment('ощибка: после SELECT * FROM users WHERE user_id =? -- selectUsersRows.length > 1')}`,
+                "description": `Something went wrong${addTextInComment('ощибка: после SELECT * FROM users WHERE user_id =? -- selectUsersRows.length > 1')}`,
                 "responseCode": "0001003",
             })
             if (selectUsersRows.length == 0) return res.status(200).json({
                 "result": 'ERR',
-                "discription": `Something went wrong${addTextInComment('ощибка: после SELECT * FROM users WHERE user_id =? -- selectUsersRows.length == 0')}`,
+                "description": `Something went wrong${addTextInComment('ощибка: после SELECT * FROM users WHERE user_id =? -- selectUsersRows.length == 0')}`,
                 "responseCode": "0001003",
             })
              
             return res.status(200).json({
                 "result": 'OK',
-                "discription": "Token is try",
+                "description": "Token is try",
                 "responseCode": "0030000",
                 'userName': selectUsersRows[0].user_name ?? "not provided" 
             })

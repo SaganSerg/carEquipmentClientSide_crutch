@@ -3,18 +3,18 @@ globalObj.ownerRegistrationOldSMSTest = [{
     uri: telephonOwnerRegistrationUri,
     body: {
         "telephoneNumber": telephoneNumber, 
-        "SMSСode": '12345',  // надо будет подставить ПРАВИЛЬНУЮ НО ПРОСРОЧЕННУУЮ СМС
+        "smsCode": '12345',  // надо будет подставить ПРАВИЛЬНУЮ НО ПРОСРОЧЕННУУЮ СМС
         "userName": userName
     }, 
     firstThenFun: mockFunction, 
     secondThenFun: (commits) => {
-        const { result, discription, responseCode } = commits
+        const { result, description, responseCode } = commits
         const API = {
             "result": 'ERR',
-            "discription": "SMS code is wrong",
+            "description": "SMS code is wrong",
             "responseCode": "0021001",
         }
-        console.log((API.responseCode == responseCode), startOfComment, discription)
+        console.log((API.responseCode == responseCode), startOfComment, description)
         return [(API.responseCode == responseCode), `${startOfMessage}  в базе отсутствуе телефон для такой смс`]
     }, 
     thirdThenFun: mockFunction, 

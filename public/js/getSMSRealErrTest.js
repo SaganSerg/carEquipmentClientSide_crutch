@@ -27,13 +27,13 @@ globalObj.getSMSRealErrTest = [
 		}
 		, firstThenFun: mockFunction
 		, secondThenFun: (commits) => {
-			const { result, discription, responseCode } = commits
+			const { result, description, responseCode } = commits
 			const API = {
 				"result": 'ERR',
-				"discription": "Something went wrong",
+				"description": "Something went wrong",
 				"responseCode": "0001003",
 			}
-            console.log((API.responseCode == responseCode), startOfComment, discription)
+            console.log((API.responseCode == responseCode), startOfComment, description)
 			return [(API.responseCode == responseCode), `${startOfMessage}Something went wrong`]
 		}
 		, thirdThenFun: mockFunction

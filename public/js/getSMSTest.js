@@ -9,13 +9,13 @@ globalObj.getSMSTest = [
 		}
 		, firstThenFun: mockFunction
 		, secondThenFun: (commits) => {
-			const { result, discription, responseCode } = commits
+			const { result, description, responseCode } = commits
 			const API = {
 				"result": 'ERR',
-				"discription": "the request JSON structure does not match URL",
+				"description": "the request JSON structure does not match URL",
 				"responseCode": "0001000"
 			}
-			console.log((API.responseCode == responseCode), startOfComment, discription)
+			console.log((API.responseCode == responseCode), startOfComment, description)
 			return [(API.responseCode == responseCode), `${startOfMessage}в JSON отсутвуют нужные параметры`]
 		}
 		, thirdThenFun: mockFunction
@@ -30,13 +30,13 @@ globalObj.getSMSTest = [
 		}
 		, firstThenFun: mockFunction
 		, secondThenFun: (commits) => {
-			const { result, discription, responseCode } = commits
+			const { result, description, responseCode } = commits
 			const API = {
 				"result": 'ERR',
-				"discription": "the request JSON structure does not match URL",
+				"description": "the request JSON structure does not match URL",
 				"responseCode": "0001000"
 			}
-			console.log((API.responseCode == responseCode), startOfComment, discription)
+			console.log((API.responseCode == responseCode), startOfComment, description)
 			return [(API.responseCode == responseCode), `${startOfMessage}в JSON отсутвуют нужные параметры`]
 		}
 		, thirdThenFun: mockFunction
@@ -52,13 +52,13 @@ globalObj.getSMSTest = [
 		}
 		, firstThenFun: mockFunction
 		, secondThenFun: (commits) => {
-			const { result, discription, responseCode } = commits
+			const { result, description, responseCode } = commits
 			const API = {
 				"result": 'ERR',
-				"discription": "TelephoneNumber is not format",
+				"description": "TelephoneNumber is not format",
 				"responseCode": "0001002",
 			}
-			console.log((API.responseCode == responseCode), startOfComment, discription)
+			console.log((API.responseCode == responseCode), startOfComment, description)
 			return [(API.responseCode == responseCode), `${startOfMessage} неправильный формат телефонного номера в случае когда присутсвует строка в номоре`]
 		}
 		, thirdThenFun: mockFunction
@@ -74,13 +74,13 @@ globalObj.getSMSTest = [
 		}
 		, firstThenFun: mockFunction
 		, secondThenFun: (commits) => {
-			const { result, discription, responseCode } = commits
+			const { result, description, responseCode } = commits
 			const API = {
 				"result": 'ERR',
-				"discription": "TelephoneNumber is not format",
+				"description": "TelephoneNumber is not format",
 				"responseCode": "0001002",
 			}
-			console.log((API.responseCode == responseCode), startOfComment, discription)
+			console.log((API.responseCode == responseCode), startOfComment, description)
 			return [(API.responseCode == responseCode), `${startOfMessage} неправильный формат телефонного номера в случае если он очень короткий`]
 		}
 		, thirdThenFun: mockFunction
@@ -96,13 +96,13 @@ globalObj.getSMSTest = [
 		}
 		, firstThenFun: mockFunction
 		, secondThenFun: (commits) => {
-			const { result, discription, responseCode } = commits
+			const { result, description, responseCode } = commits
 			const API = {
 				"result": 'ERR',
-				"discription": "TelephoneNumber is not format",
+				"description": "TelephoneNumber is not format",
 				"responseCode": "0001002",
 			}
-			console.log((API.responseCode == responseCode), startOfComment, discription)
+			console.log((API.responseCode == responseCode), startOfComment, description)
 			return [(API.responseCode == responseCode), `${startOfMessage} неправильный формат телефонного номера в случае если он слишком длинный`]
 		}
 		, thirdThenFun: mockFunction
@@ -118,23 +118,23 @@ globalObj.getSMSTest = [
 		}
 		, firstThenFun: mockFunction
 		, secondThenFun: (commits) => {
-			const { result, discription, responseCode } = commits
+			const { result, description, responseCode } = commits
 			const API = {
 				"result": 'OK',
-				"discription": "SMS is sent",
+				"description": "SMS is sent",
 				"responseCode": "0010000",
 			}
 			const alterAPI = {
 				"result": 'ERR',
-				"discription": "This phone number is already registered in the process of registering other requests",
+				"description": "This phone number is already registered in the process of registering other requests",
 				"responseCode": "0011002",
 			}
 			const alterAPI2 = {
 				"result": 'ERR',
-				"discription": "For this telephone number the SMS request has already been made",
+				"description": "For this telephone number the SMS request has already been made",
 				"responseCode": "0011001",
 			}
-			console.log((API.responseCode == responseCode || alterAPI.responseCode == responseCode || alterAPI2.responseCode == responseCode), startOfComment, discription)
+			console.log((API.responseCode == responseCode || alterAPI.responseCode == responseCode || alterAPI2.responseCode == responseCode), startOfComment, description)
 			if (alterAPI.responseCode == responseCode) console.warn('Данный телефонный номер уже был зарегестрирован "вклинивавшимся" запросом')
 			if (alterAPI2.responseCode == responseCode) console.warn('Данный номер телефона УЖЕ БЫЛ зарегестрирован штатным образом')
 			return [(API.responseCode == responseCode || alterAPI.responseCode == responseCode || alterAPI2.responseCode == responseCode), `${startOfMessage} неправильный формат возврата когда все хорошо`]
@@ -152,23 +152,23 @@ globalObj.getSMSTest = [
 		}
 		, firstThenFun: mockFunction
 		, secondThenFun: (commits) => {
-			const { result, discription, responseCode } = commits
+			const { result, description, responseCode } = commits
 			const API = {
 				"result": 'OK',
-				"discription": "SMS is sent",
+				"description": "SMS is sent",
 				"responseCode": "0010000",
 			}
 			const alterAPI = {
 				"result": 'ERR',
-				"discription": "This phone number is already registered in the process of registering other requests",
+				"description": "This phone number is already registered in the process of registering other requests",
 				"responseCode": "0011002",
 			}
 			const alterAPI2 = {
 				"result": 'ERR',
-				"discription": "For this telephone number the SMS request has already been made",
+				"description": "For this telephone number the SMS request has already been made",
 				"responseCode": "0011001",
 			}
-			console.log((API.responseCode == responseCode || alterAPI.responseCode == responseCode || alterAPI2.responseCode == responseCode), startOfComment, discription)
+			console.log((API.responseCode == responseCode || alterAPI.responseCode == responseCode || alterAPI2.responseCode == responseCode), startOfComment, description)
 			if (API.responseCode == responseCode) console.warn('Данный телефонный номер был зарегистрирован этим запросом')
 			if (alterAPI.responseCode == responseCode) console.warn('Данный телефонный номер УЖЕ БЫЛ зарегестрирован "вклинивавшимся" запросом')
 			return [(API.responseCode == responseCode || alterAPI.responseCode == responseCode || alterAPI2.responseCode == responseCode), `${startOfMessage} неправильный формат когда есть повторная отправка смс`]
@@ -186,23 +186,23 @@ globalObj.getSMSTest = [
 		}
 		, firstThenFun: mockFunction
 		, secondThenFun: (commits) => {
-			const { result, discription, responseCode } = commits
+			const { result, description, responseCode } = commits
 			const API = {
 				"result": 'OK',
-				"discription": "SMS is sent",
+				"description": "SMS is sent",
 				"responseCode": "0010000",
 			}
 			const alterAPI = {
 				"result": 'ERR',
-				"discription": "This phone number is already registered in the process of registering other requests",
+				"description": "This phone number is already registered in the process of registering other requests",
 				"responseCode": "0011002",
 			}
 			const alterAPI2 = {
 				"result": 'ERR',
-				"discription": "For this telephone number the SMS request has already been made",
+				"description": "For this telephone number the SMS request has already been made",
 				"responseCode": "0011001",
 			}
-			console.log((API.responseCode == responseCode || alterAPI.responseCode == responseCode || alterAPI2.responseCode == responseCode), startOfComment, discription)
+			console.log((API.responseCode == responseCode || alterAPI.responseCode == responseCode || alterAPI2.responseCode == responseCode), startOfComment, description)
 			if (API.responseCode == responseCode) console.warn('Данный телефонный номер был зарегистрирован этим запросом')
 			if (alterAPI.responseCode == responseCode) console.warn('Данный телефонный номер УЖЕ БЫЛ зарегестрирован "вклинивавшимся" запросом')
 			return [(API.responseCode == responseCode || alterAPI.responseCode == responseCode || alterAPI2.responseCode == responseCode), `${startOfMessage} неправильный формат когда есть повторная отправка смс`]

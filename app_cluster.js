@@ -24,3 +24,7 @@ if (cluster.isMaster) {
     const port = process.env.PORT || 3000
     require('./app.js')(port)
 }
+
+// forever start app_cluster.js
+// forever restart app_cluster.js
+// forever stop app_cluster.js

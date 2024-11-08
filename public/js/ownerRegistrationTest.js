@@ -4,18 +4,18 @@ globalObj.ownerRegistrationTest = [
     //     {
     //         uri: telephonOwnerRegistrationUri,
     //         body: {
-    //             "SMSСode": smsCode,
+    //             "smsCode": smsCode,
     //             "userName": userName
     //         }
     //         , firstThenFun: mockFunction
     //         , secondThenFun: (commits) => {
-    //             const { result, discription, responseCode } = commits
+    //             const { result, description, responseCode } = commits
     //             const API = {
     //                 "result": 'ERR',
-    //                 "discription": "the request JSON structure does not match URL",
+    //                 "description": "the request JSON structure does not match URL",
     //                 "responseCode": "0001000"
     //             }
-    //             console.log((API.responseCode == responseCode), startOfComment, discription)
+    //             console.log((API.responseCode == responseCode), startOfComment, description)
     //             return [(API.responseCode == responseCode), `${startOfMessage}в JSON отсутвует параметер с номером телефона`]
     //         }
     //         , thirdThenFun: mockFunction
@@ -30,13 +30,13 @@ globalObj.ownerRegistrationTest = [
     //         }
     //         , firstThenFun: mockFunction
     //         , secondThenFun: (commits) => {
-    //             const { result, discription, responseCode } = commits
+    //             const { result, description, responseCode } = commits
     //             const API = {
     //                 "result": 'ERR',
-    //                 "discription": "the request JSON structure does not match URL",
+    //                 "description": "the request JSON structure does not match URL",
     //                 "responseCode": "0001000"
     //             }
-    //             console.log((API.responseCode == responseCode), startOfComment, discription)
+    //             console.log((API.responseCode == responseCode), startOfComment, description)
     //             return [(API.responseCode == responseCode), `${startOfMessage}в JSON отсутвует параметер SMScode `]
     //         }
     //         , thirdThenFun: mockFunction
@@ -50,13 +50,13 @@ globalObj.ownerRegistrationTest = [
     //         }
     //         , firstThenFun: mockFunction
     //         , secondThenFun: (commits) => {
-    //             const { result, discription, responseCode } = commits
+    //             const { result, description, responseCode } = commits
     //             const API = {
     //                 "result": 'ERR',
-    //                 "discription": "the request JSON structure does not match URL",
+    //                 "description": "the request JSON structure does not match URL",
     //                 "responseCode": "0001000"
     //             }
-    //             console.log((API.responseCode == responseCode), startOfComment, discription)
+    //             console.log((API.responseCode == responseCode), startOfComment, description)
     //             return [(API.responseCode == responseCode), `${startOfMessage}в JSON вообще отсутвуют какие-либо параметры`]
     //         }
     //         , thirdThenFun: mockFunction
@@ -87,18 +87,18 @@ globalObj.ownerRegistrationTest = [
     //     uri: telephonOwnerRegistrationUri,
     //     body: {
     //         "telephoneNumber": '7961183508Ф',
-    //         "SMSСode": smsCode,
+    //         "smsCode": smsCode,
     //         "userName": userName
     //     }
     //     , firstThenFun: mockFunction
     //     , secondThenFun: (commits) => {
-    //         const { result, discription, responseCode } = commits
+    //         const { result, description, responseCode } = commits
     //         const API = {
     //             "result": 'ERR',
-    //             "discription": "TelephoneNumber is not format",
+    //             "description": "TelephoneNumber is not format",
     //             "responseCode": "0001002",
     //         }
-    //         console.log((API.responseCode == responseCode), startOfComment, discription)
+    //         console.log((API.responseCode == responseCode), startOfComment, description)
     //         return [(API.responseCode == responseCode), `${startOfMessage} неправильный формат телефонного номера в случае когда длина правильная, но  присутсвует строка в номоре`]
     //     }
     //     , thirdThenFun: mockFunction
@@ -109,18 +109,18 @@ globalObj.ownerRegistrationTest = [
     //     uri: telephonOwnerRegistrationUri,
     //     body: {
     //         "telephoneNumber": '7961183508',
-    //         "SMSСode": smsCode,
+    //         "smsCode": smsCode,
     //         "userName": userName
     //     }
     //     , firstThenFun: mockFunction
     //     , secondThenFun: (commits) => {
-    //         const { result, discription, responseCode } = commits
+    //         const { result, description, responseCode } = commits
     //         const API = {
     //             "result": 'ERR',
-    //             "discription": "TelephoneNumber is not format",
+    //             "description": "TelephoneNumber is not format",
     //             "responseCode": "0001002",
     //         }
-    //         console.log((API.responseCode == responseCode), startOfComment, discription)
+    //         console.log((API.responseCode == responseCode), startOfComment, description)
     //         return [(API.responseCode == responseCode), `${startOfMessage} неправильный формат телефонного номера в случае когда длина номера короткая`]
     //     }
     //     , thirdThenFun: mockFunction
@@ -132,18 +132,18 @@ globalObj.ownerRegistrationTest = [
     //     uri: telephonOwnerRegistrationUri,
     //     body: {
     //         "telephoneNumber": '7961183508112345678',
-    //         "SMSСode": smsCode,
+    //         "smsCode": smsCode,
     //         "userName": userName
     //     }
     //     , firstThenFun: mockFunction
     //     , secondThenFun: (commits) => {
-    //         const { result, discription, responseCode } = commits
+    //         const { result, description, responseCode } = commits
     //         const API = {
     //             "result": 'ERR',
-    //             "discription": "TelephoneNumber is not format",
+    //             "description": "TelephoneNumber is not format",
     //             "responseCode": "0001002",
     //         }
-    //         console.log((API.responseCode == responseCode), startOfComment, discription)
+    //         console.log((API.responseCode == responseCode), startOfComment, description)
     //         return [(API.responseCode == responseCode), `${startOfMessage} неправильный формат телефонного номера в случае когда длина номера слишком большая`]
     //     }
     //     , thirdThenFun: mockFunction
@@ -155,18 +155,18 @@ globalObj.ownerRegistrationTest = [
     //     uri: telephonOwnerRegistrationUri,
     //     body: {
     //         "telephoneNumber": telephoneNumber,
-    //         "SMSСode": "123456",
+    //         "smsCode": "123456",
     //         "userName": userName
     //     }
     //     , firstThenFun: mockFunction
     //     , secondThenFun: (commits) => {
-    //         const { result, discription, responseCode } = commits
+    //         const { result, description, responseCode } = commits
     //         const API = {
     //             "result": 'ERR',
-    //     "discription": "SMS code is wrong -- длина кода не равна должной",
+    //     "description": "SMS code is wrong -- длина кода не равна должной",
     //     "responseCode": "0021001"
     //         }
-    //         console.log((API.responseCode == responseCode), startOfComment, discription)
+    //         console.log((API.responseCode == responseCode), startOfComment, description)
     //         return [(API.responseCode == responseCode), `${startOfMessage} неправильный формат смс-кода -- слишком длинный`]
     //     }
     //     , thirdThenFun: mockFunction
@@ -178,18 +178,18 @@ globalObj.ownerRegistrationTest = [
     //     uri: telephonOwnerRegistrationUri,
     //     body: {
     //         "telephoneNumber": telephoneNumber,
-    //         "SMSСode": "1234",
+    //         "smsCode": "1234",
     //         "userName": userName
     //     }
     //     , firstThenFun: mockFunction
     //     , secondThenFun: (commits) => {
-    //         const { result, discription, responseCode } = commits
+    //         const { result, description, responseCode } = commits
     //         const API = {
     //             "result": 'ERR',
-    //     "discription": "SMS code is wrong -- длина кода не равна должной",
+    //     "description": "SMS code is wrong -- длина кода не равна должной",
     //     "responseCode": "0021001",
     //         }
-    //         console.log((API.responseCode == responseCode), startOfComment, discription)
+    //         console.log((API.responseCode == responseCode), startOfComment, description)
     //         return [(API.responseCode == responseCode), `${startOfMessage} неправильный формат смс-кода -- слишком короткий`]
     //     }
     //     , thirdThenFun: mockFunction
@@ -201,19 +201,19 @@ globalObj.ownerRegistrationTest = [
     //     uri: telephonOwnerRegistrationUri,
     //     body: {
     //         "telephoneNumber": telephoneNumber,
-    //         "SMSСode": smsCode,
+    //         "smsCode": smsCode,
     //         "userName": "me hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
     //     }
     //     , firstThenFun: mockFunction
     //     , secondThenFun: (commits) => {
-    //         const { result, discription, responseCode } = commits
+    //         const { result, description, responseCode } = commits
     //         const API = {
     //             "result": 'ERR',
-    //             "discription": "Username is too long",
+    //             "description": "Username is too long",
     //             "responseCode": "0021002",
     //         }
     //         console.log(responseCode, ' this is responseCode')
-    //         console.log((API.responseCode == responseCode), startOfComment, discription)
+    //         console.log((API.responseCode == responseCode), startOfComment, description)
     //         return [(API.responseCode == responseCode), `${startOfMessage}  длина userName слишком большая`]
     //     }
     //     , thirdThenFun: mockFunction
@@ -225,18 +225,18 @@ globalObj.ownerRegistrationTest = [
     //     uri: telephonOwnerRegistrationUri,
     //     body: {
     //         "telephoneNumber": '79611835082', // 
-    //         "SMSСode": smsCode,
+    //         "smsCode": smsCode,
     //         "userName": userName
     //     }
     //     , firstThenFun: mockFunction
     //     , secondThenFun: (commits) => {
-    //         const { result, discription, responseCode } = commits
+    //         const { result, description, responseCode } = commits
     //         const API = {
     //             "result": 'ERR',
-    //         "discription": "telephoneNumber is not registration",
+    //         "description": "telephoneNumber is not registration",
     //         "responseCode": "0021000",
     //         }
-    //         console.log((API.responseCode == responseCode), startOfComment, discription)
+    //         console.log((API.responseCode == responseCode), startOfComment, description)
     //         return [(API.responseCode == responseCode), `${startOfMessage}  такого телефона нет в базе`]
     //     }
     //     , thirdThenFun: mockFunction
@@ -248,18 +248,18 @@ globalObj.ownerRegistrationTest = [
     //     uri: telephonOwnerRegistrationUri,
     //     body: {
     //         "telephoneNumber": telephoneNumber, // 
-    //         "SMSСode": smsCode,
+    //         "smsCode": smsCode,
     //         "userName": userName
     //     }
     //     , firstThenFun: mockFunction
     //     , secondThenFun: (commits) => {
-    //         const { result, discription, responseCode } = commits
+    //         const { result, description, responseCode } = commits
     //         const API = {
     //             "result": 'ERR',
-    //             "discription": "SMS code is wrong",
+    //             "description": "SMS code is wrong",
     //             "responseCode": "0021001",
     //         }
-    //         console.log((API.responseCode == responseCode), startOfComment, discription)
+    //         console.log((API.responseCode == responseCode), startOfComment, description)
     //         return [(API.responseCode == responseCode), `${startOfMessage}  в базе отсутствуе телефон для такой смс`]
     //     }
     //     , thirdThenFun: mockFunction
@@ -271,18 +271,18 @@ globalObj.ownerRegistrationTest = [
     //     uri: telephonOwnerRegistrationUri,
     //     body: {
     //         "telephoneNumber": telephoneNumber,
-    //         "SMSСode": '12345',
+    //         "smsCode": '12345',
     //         "userName": userName
     //     }
     //     , firstThenFun: mockFunction
     //     , secondThenFun: (commits) => {
-    //         const { result, discription, responseCode } = commits
+    //         const { result, description, responseCode } = commits
     //         const API = {
     //             "result": 'ERR',
-    //             "discription": "SMS code is wrong",
+    //             "description": "SMS code is wrong",
     //             "responseCode": "0021001",
     //         }
-    //         console.log((API.responseCode == responseCode), startOfComment, discription)
+    //         console.log((API.responseCode == responseCode), startOfComment, description)
     //         return [(API.responseCode == responseCode), `${startOfMessage}  в базе отсутствуе такой код смс`]
     //     }
     //     , thirdThenFun: mockFunction
@@ -294,19 +294,19 @@ globalObj.ownerRegistrationTest = [
         uri: telephonOwnerRegistrationUri,
         body: {
             "telephoneNumber": telephoneNumber,
-            "SMSСode": smsCode,
+            "smsCode": smsCode,
             "userName": userName
         }
         , firstThenFun: mockFunction
         , secondThenFun: (commits) => {
-            const { result, discription, responseCode } = commits
+            const { result, description, responseCode } = commits
             const API = {
                 "result": 'OK',
-                "discription": "Owner is registered by telephone",
+                "description": "Owner is registered by telephone",
                 "responseCode": "0020000",
             }
             console.log(API.responseCode, ' -- apt ', responseCode, ' -- ответ' )
-            console.log((API.responseCode == responseCode), startOfComment, discription)
+            console.log((API.responseCode == responseCode), startOfComment, description)
             return [(API.responseCode == responseCode), `${startOfMessage}  это все правильное`]
         }
         , thirdThenFun: mockFunction
@@ -317,18 +317,18 @@ globalObj.ownerRegistrationTest = [
         uri: telephonOwnerRegistrationUri,
         body: {
             "telephoneNumber": telephoneNumber,
-            "SMSСode": smsCode, // это левая смс-ка, в базе ее быть не должно
+            "smsCode": smsCode, // это левая смс-ка, в базе ее быть не должно
             "userName": userName
         }
         , firstThenFun: mockFunction
         , secondThenFun: (commits) => {
-            const { result, discription, responseCode } = commits
+            const { result, description, responseCode } = commits
             const API = {
                 "result": 'ERR',
-                "discription": "the owner was already registered",
+                "description": "the owner was already registered",
                 "responseCode": "0021002",
             }
-            console.log((API.responseCode == responseCode), startOfComment, discription)
+            console.log((API.responseCode == responseCode), startOfComment, description)
             return [(API.responseCode == responseCode), `${startOfMessage}  это все правильное`]
         }
         , thirdThenFun: mockFunction

@@ -1,3 +1,3 @@
-const telephonOwnerRegistrationUri = '/api/telephonOwnerRegistration'
+const telephonOwnerRegistrationUri = '/api/telephoneOwnerRegistration'
 const userName = 'Вася Пупкин'
 

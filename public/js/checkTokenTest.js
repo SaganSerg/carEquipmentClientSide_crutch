@@ -7,14 +7,14 @@ globalObj.checkTokenTest = [
         }
         , firstThenFun: mockFunction
         , secondThenFun: (commits) => {
-            const { result, discription, responseCode } = commits
+            const { result, description, responseCode } = commits
             const API = {
                 "result": 'OK',
-                "discription": "Token is try",
+                "description": "Token is try",
                 "responseCode": "0030000",
                 'userName': 'some name'
             }
-            console.log((API.responseCode == responseCode), startOfComment, discription)
+            console.log((API.responseCode == responseCode), startOfComment, description)
             return [(API.responseCode == responseCode), `${startOfMessage} все хорошо`]
         }
         , thirdThenFun: mockFunction
@@ -27,13 +27,13 @@ globalObj.checkTokenTest = [
         }
         , firstThenFun: mockFunction
         , secondThenFun: (commits) => {
-            const { result, discription, responseCode } = commits
+            const { result, description, responseCode } = commits
             const API = {
                 "result": 'ERR',
-                "discription": "the request JSON structure does not match URL",
+                "description": "the request JSON structure does not match URL",
                 "responseCode": "0001000"
             }
-            console.log((API.responseCode == responseCode), startOfComment, discription)
+            console.log((API.responseCode == responseCode), startOfComment, description)
             return [(API.responseCode == responseCode), `${startOfMessage} все хорошо`]
         }
         , thirdThenFun: mockFunction
@@ -77,13 +77,13 @@ globalObj.checkTokenTest = [
         }
         , firstThenFun: mockFunction
         , secondThenFun: (commits) => {
-            const { result, discription, responseCode } = commits
+            const { result, description, responseCode } = commits
             const API = {
                 "result": 'ERR',
-                "discription": "Token is wrong",
+                "description": "Token is wrong",
                 "responseCode": "0001001",
             }
-            console.log((API.responseCode == responseCode), startOfComment, discription)
+            console.log((API.responseCode == responseCode), startOfComment, description)
             return [(API.responseCode == responseCode), `${startOfMessage} неверный токен`]
         }
         , thirdThenFun: mockFunction
