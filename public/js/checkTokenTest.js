@@ -3,7 +3,7 @@ globalObj.checkTokenTest = [
     {
         uri: checkTokenUri,
         body: {
-            'token': token
+            'accessToken': accessToken
         }
         , firstThenFun: mockFunction
         , secondThenFun: (commits) => {
@@ -73,7 +73,7 @@ globalObj.checkTokenTest = [
     {
         uri: checkTokenUri,
         body: {
-            'token': 'lkjlkjlkjlkjlkjlkjlkj' // это левый токен
+            'accessToken': 'lkjlkjlkjlkjlkjlkjlkj' // это левый токен
         }
         , firstThenFun: mockFunction
         , secondThenFun: (commits) => {
