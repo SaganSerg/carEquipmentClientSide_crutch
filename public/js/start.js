@@ -90,7 +90,7 @@ function toDoPostJSONTest(uri, body, firstThenFun, secondThenFun, thirdThenFun, 
 const fakeSituationAssert = [true, 'This is a comment on a fake situation. ']
 const mockFunction = () => fakeSituationAssert
 const startOfMessage = 'Неправильно обрабатывается ситуация, когда '
-const smsCode = '66136' // это пока фейковый код, для теста нужно изменить срок ожидания кода и подставить сюда правильный 
+const smsCode = '53421' // это пока фейковый код, для теста нужно изменить срок ожидания кода и подставить сюда правильный 
 const telephoneNumber = '79611835081'
 const telephoneSerialNumber = '1234'
 const globalObj = {}

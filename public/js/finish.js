@@ -21,6 +21,7 @@ window.addEventListener('load', () => {
 	buttonClick('ownerRegistrationOldSMSTest')
 	buttonClick('ownerRegistrationTest')
 	buttonClick('checkTokenTest')
+	buttonClick('getTokensTest')
     
 })
 

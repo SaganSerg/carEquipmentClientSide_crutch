@@ -5,3 +5,4 @@ access.log
 .credentials.test.json
 *.crt
 *.pem
+package-lock.json

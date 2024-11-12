@@ -3,7 +3,7 @@ const oneMinutesMMSecond = 60 * 1000 // в миллисекундах
 const oneHourMMSecond = oneHour * 1000 // в миллисекундах
 const oneDaySecond = oneHour * 24 // в секундах
 const oneDayMMSecond = oneDaySecond * 1000 // в миллисекундах
-const deleteSmsTime = oneMinutesMMSecond * 3 // данные по смс-ке удаляются через 3 минуты
+const deleteSmsTime = oneMinutesMMSecond * 2 // данные по смс-ке удаляются через 3 минуты
 
 module.exports = { 
     credentials: require(`./.credentials.${process.env.NODE_ENV || 'development'}`)
