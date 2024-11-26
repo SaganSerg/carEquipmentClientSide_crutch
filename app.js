@@ -940,6 +940,10 @@ app.post('/api/getSMSCodeForRegistrationByTelephone', (req, res, next) => {
 //         })
 //     })
 // })
+app.post('/api/getTokens', (req, res, next) => {
+    const body = req?.body, telephoneNumber = body?.telephoneNumber, smsCode = body?.smsCode
+    
+})
 
 app.post(`/api/checkToken`, (req, res, next) => {
     const body = req?.body, accessToken = body?.accessToken
