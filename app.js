@@ -42,6 +42,7 @@ const express = require('express')
     , cluster = require('cluster')
     , { SmsAero, SmsAeroError, SmsAeroHTTPError } = require('smsaero')
     , getFunAddTextComment = require('./lib/commonFunctions').getFunAddTextComment
+    , dataForAPI = require('./lib/dataForAPInode')
 // https = require('https') // это может быть использовано, в случае если нужен https без nginx 
 
 const urlResetPass = 'reset' // это url я вынес в переменную, потому что он используется в двух местах
@@ -851,7 +852,7 @@ app.post('/api/getSMSCodeForRegistrationByTelephone', (req, res, next) => {
 //                                             "responseCode": "0001003`,
 //                                         })
 //                                     }
-        
+
 //                                 })
 //                                 return res.status(200).json(
 //                                     {
@@ -906,7 +907,7 @@ app.post('/api/getSMSCodeForRegistrationByTelephone', (req, res, next) => {
 //                                         "responseCode": "0001003`,
 //                                     })
 //                                 }
-    
+
 //                             })
 //                             return res.status(200).json(
 //                                 {
@@ -935,14 +936,14 @@ app.post('/api/getSMSCodeForRegistrationByTelephone', (req, res, next) => {
 //                     })
 //                 }
 //             })
-            
-           
+
+
 //         })
 //     })
 // })
 app.post('/api/getTokens', (req, res, next) => {
     const body = req?.body, telephoneNumber = body?.telephoneNumber, smsCode = body?.smsCode
-    
+
 })
 
 app.post(`/api/checkToken`, (req, res, next) => {
@@ -978,12 +979,12 @@ app.post(`/api/checkToken`, (req, res, next) => {
                 "description": `Something went wrong${addTextInComment('ощибка: после SELECT * FROM users WHERE user_id =? -- selectUsersRows.length == 0')}`,
                 "responseCode": "0001003",
             })
-             
+
             return res.status(200).json({
                 "result": 'OK',
                 "description": "Token is try",
                 "responseCode": "0030000",
-                'userName': selectUsersRows[0].user_name ?? "not provided" 
+                'userName': selectUsersRows[0].user_name ?? "not provided"
             })
         })
     });
@@ -1002,7 +1003,7 @@ app.get('/api/testrequest', (req, res, next) => {
             'comment_': rows[0].comment_,
             'time_': rows[0].time_
         })
-    } )
+    })
 })
 app.post('/api/signup', function (req, res, next) {
     const username = req.body.username
@@ -1208,6 +1209,15 @@ app.get('/tests', (req, res, next) => {
     if (app.get('env') === 'production') return next()
     res.render('tests', { layout: 'test' })
 })
+app.get('/getAPI', (req, res, next) => {
+    
+    res.render('getAPI', {
+
+        layout: 'getAPI',
+        
+    })
+}) // http://localhost:3000/getAPI
+// http://localhost/getAPI
 // NODE_ENV=production node app_cluster.js
 // пишу адрес странички чтобы удобней было копировать http://localhost:3000/tests
 // пишу адрес странички чтобы удобней было копировать https://localhost/tests

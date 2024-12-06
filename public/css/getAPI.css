@@ -1,0 +1,310 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+	display: block;
+}
+
+body {
+	line-height: 1;
+}
+
+ol,
+ul {
+	list-style: none;
+}
+
+blockquote,
+q {
+	quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+	content: '';
+	content: none;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* custom style */
+/* 
+classes
+
+page, 
+page__mainTitle, 
+mainTitle, 
+page_middleTitle, 
+middleTitle, 
+page__listBlock, 
+listBlock, 
+listBlock__listElem, 
+oneResponse, 
+oneResponse__description, 
+description, 
+description__value
+oneResponse__code 
+code
+code__brace
+code_property
+listBlock__listElem 
+onePoint
+smallTitle
+oneResponse__title
+oneResponse__method
+method
+method__value
+oneResponse__uri 
+uri
+uri__value
+oneResponse__requestListTitle 
+smallestTitle
+oneResponse__requestList 
+requestList
+requestList__oneRarameter oneParameter
+oneParameter__parameterDescription
+oneParameter__parameterName
+oneResponse__requestJSONTitle 
+smallestTitle
+oneResponse__code
+requestJSON
+oneResponse__headersList 
+headersList
+headersList__oneheader
+oneResponse__requestsList
+requestsList
+requestsList__comment
+*/
+html {
+	height: 100%;
+	font-size: 16px;
+	font-family: 'Roboto', sans-serif;
+}
+
+.page {
+	padding: 4rem;
+}
+
+.page__mainTitle {
+	font-size: 4rem;
+	padding-bottom: 2rem;
+}
+
+/* .mainTitle {} */
+.page__middleTitle {
+	font-size: 3rem;
+	padding-bottom: 1.5rem;
+}
+
+/* .middleTitle {} */
+.page__listBlock {
+	padding: 4rem;
+}
+
+/* .listBlock {} */
+
+.listBlock__listElem {
+	padding-bottom: 2rem;
+}
+
+.oneResponse {
+	padding: 1rem;
+}
+
+/* .oneResponse__description {} */
+
+.description {
+	padding-bottom: 1rem;
+}
+
+/* .description__value {} */
+
+/* .oneResponse__code {} */
+
+.code {
+	padding: 1rem 0 1rem 0;
+}
+
+.code__brace {
+	padding-bottom: .5rem;
+}
+
+.code_property {
+	padding-left: 2rem;
+	padding-bottom: .5rem;
+}
+
+/* .listBlock__listElem {} */
+
+/* .onePoint {} */
+.onePoint::before {
+	content: ' - ';
+}
+.smallTitle {
+	font-size: 2rem;
+}
+
+
+/* .oneResponse__title {} */
+
+/* .oneResponse__method {} */
+
+/* .method {} */
+
+/* .method__value {} */
+
+/* .oneResponse__uri {} */
+
+/* .uri {} */
+
+/* .uri__value {} */
+
+/* .oneResponse__requestListTitle {} */
+
+/* .smallestTitle {} */
+
+/* .oneResponse__requestList {} */
+
+/* .requestList {} */
+
+/* .requestList__oneRarameter {} */
+
+/* .oneParameter {} */
+
+/* .oneParameter__parameterDescription {} */
+
+/* .oneParameter__parameterName {} */
+
+/* .oneResponse__requestJSONTitle {} */
+
+/* .smallestTitle {} */
+
+/* .oneResponse__code {} */
+
+/* .requestJSON {} */
+
+/* .oneResponse__headersList {} */
+
+/* .headersList {} */
+
+/* .headersList__oneheader {} */
+
+/* .oneResponse__requestsList {} */
+
+/* .requestsList {} */
+
+/* .requestsList__comment {} */
+
+.warning {
+	color: red;
+}
