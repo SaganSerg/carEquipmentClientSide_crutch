@@ -6,14 +6,15 @@
     </legend>
     <label class="buttonTest">
         This is an error in sms-service
-        <button id="getSMSserviceSMSErrTest" data-testSet="">
-            Launch test
+        <button id="getSMSserviceSMSErrTest" data-testSet="getSMSserviceSMSErrTest">
+            Launch test.
+            Comment: this test must run at test environment. NODE_ENV=test node app_cluster.js
         </button>
     </label>
     <label class="buttonTest">
         This is an unhandled error
-        <button id="getSMSRealErrTest" data-testSet="getSMSRealErrTest">
-            Launch test
+        <button id="getSMSRealErrTest" data-testSet="getSMSRealErrTest" class="disabled" disabled>
+            Launch test. Как то не так работает код --- пользоваться не буду.
         </button>
     </label>
     <label class="buttonTest">
@@ -30,14 +31,14 @@
     </legend>
     <label class="buttonTest">
         This is an error from dated sms
-        <button id="ownerRegistrationOldSMSTest" data-testSet="ownerRegistrationOldSMSTest">
-            Launch test
+        <button id="ownerRegistrationOldSMSTest" data-testSet="ownerRegistrationOldSMSTest" class="disabled" disabled>
+            Launch test. <i>Данные запросы не используются. Не пользоваться.</i>
         </button>
     </label>
     <label class="buttonTest">
         This is a common error
-        <button id="ownerRegistrationTest" data-testSet="ownerRegistrationTest">
-            Launch test
+        <button id="ownerRegistrationTest" data-testSet="ownerRegistrationTest" class="disabled" disabled>
+            Launch test. <i>Данные запросы не используются. Не пользоваться.</i>
         </button>
     </label>
 </fieldset>
@@ -47,6 +48,7 @@
     </legend>
     <label class="buttonTest">
         This is a common error
+        <input type="text" id="putOnToken"> Put on token
         <button id="checkTokenTest" data-testSet="checkTokenTest">
             Launch test
         </button>
@@ -59,18 +61,31 @@
     </legend>
     <label class="buttonTest">
         This is a common error
-        <input type="text" id="gettokensmscode">
+        <input type="text" id="gettokensmscode"> Put on sms-code
         <button id="getTokensTest" data-testSet="getTokensTest">
             Launch test
         </button>
     </label>
 </fieldset>
 
+<fieldset>
+    <legend>
+        Testing
+    </legend>
+    <label class="buttonTest">
+        This is a testing
+        <input type="text" id="putDataTesting" data-testSet="putDataTesting">put data
+        <button id="getTesting" data-testSet="getTesting">
+            Launch test
+        </button>
+    </label>
+</fieldset>
 
-<script src="/js/tests/start.js"></script>
-{{!-- <script src="/js/tests/ownerRegistrationStart.js"></script> --}}
-{{!-- <script src="/js/tests/ownerRegistrationOldSMSTest.js"></script> --}}
-{{!-- <script src="/js/tests/ownerRegistrationTest.js"></script> --}}
+
+{{!-- <script src="/js/tests/start.js"></script>
+<script src="/js/tests/ownerRegistrationStart.js"></script>
+<script src="/js/tests/ownerRegistrationOldSMSTest.js"></script>
+<script src="/js/tests/ownerRegistrationTest.js"></script>
 <script src="/js/tests/getSMSStart.js"></script>
 <script src="/js/tests/getSMSserviceSMSErrTest.js"></script>
 <script src="/js/tests/getSMSRealErrTest.js"></script>
@@ -79,4 +94,8 @@
 <script src="/js/tests/checkTokenTest.js"></script>
 <script src="/js/tests/getTokensStart.js"></script>
 <script src="/js/tests/getTokensTest.js"></script>
-<script src="/js/tests/finish.js"></script>
+<script src="/js/tests/finish.js"></script> --}}
+
+<script type="module">
+    import "./js/tests/test.js"
+</script>

@@ -17,12 +17,7 @@ added 266 packages, and audited 267 packages in 40s
 
 
 */
-// надо будет удалать
-// console.log(process.env.PORT)
-// console.log('process.env.PORT')
-// console.log(process.env)
-// console.log('process.env')
-// выше удаляем
+
 const express = require('express')
     , expressHandlebars = require('express-handlebars')
     , passport = require('passport')
@@ -42,7 +37,10 @@ const express = require('express')
     , cluster = require('cluster')
     , { SmsAero, SmsAeroError, SmsAeroHTTPError } = require('smsaero')
     , getFunAddTextComment = require('./lib/commonFunctions').getFunAddTextComment
+    // , addTextCommentNew = require('./lib/commonFunctions').addTextCommentNew
     , dataForAPI = require('./lib/dataForAPInode')
+    , appFileTests = require('./lib/customTests/appFileTests')
+    , runTests = require('./lib/commonFunctions').runTests
 // https = require('https') // это может быть использовано, в случае если нужен https без nginx 
 
 const urlResetPass = 'reset' // это url я вынес в переменную, потому что он используется в двух местах
@@ -305,7 +303,7 @@ const authenticateLongToken = (req, res, next) => {
 
 // __dirname --- это текущая папка
 const app = express()
-const addTextInComment = getFunAddTextComment(app)
+
 app.use(express.static(__dirname + '/public'))
 
 const port = process.env.PORT ?? 3000
@@ -540,67 +538,147 @@ let smsCodeCleanId = setInterval(() => {
         if (err) return console.log('err cleanSmsCode', err)
     })
 }, cleanSmsCodeTime)
+
+let addTextInComment = getFunAddTextComment(app)
+
+// let addTextCommentNew = (app, text) => {
+//     const env = app.get('env')
+//     // console.log('text --- ', text)
+//     if (env === 'test' || env === 'development') {
+//         let ret = ` -- ${text}`
+//         // console.log('ret --- ', ret)
+//         return ret
+//     }
+//     return ''
+// }
+let deleteDiscriptionRus = response => {
+    delete response.discriptionRus
+    return response
+}
+let getResponseJSON = (responseCode, comment) => {
+    if (!comment) comment = ''
+    let putComment = response => {
+        let com = addTextInComment(comment)
+        response.description = `${response.description}${com}`
+        return response
+    }
+    let getResponseObj = (obj) => {
+        return JSON.parse(JSON.stringify(obj))
+    }
+    if (!responseCode || typeof responseCode !== 'string') {
+        return deleteDiscriptionRus(putComment(getResponseObj(dataForAPI.universalResponses)))
+    }
+    for (let elem of dataForAPI.responses) {
+        if (elem.responseCode === responseCode) {
+            let ret = deleteDiscriptionRus(putComment(getResponseObj(elem)))
+            return ret
+        }
+    }
+}
+
+/* objOwnerId = {id, toDeleteOwner}
+example {id: insertOwnersRows.insertId, toDeleteOwner: true } {id: selectOwnersRows[0].owner_id, toDeleteOwner: false } */
+let makeConnectionUpdateUsersReturnJSON = (req, res, next, db, getResponseJSON, addTextInComment, getTokenFunction, userId, credentials, tokenExpire, longTokenExpire, userName, objOwnerId) => {
+    let returnedValue // это для тестирования
+    const userAgent = req?.headers['user-agent'] ?? 'Unknown'
+    const ownerId = objOwnerId.id
+    const deleteOwner = () => {
+        if (objOwnerId.toDeleteOwner) db.run('DELETE FROM owners WHERE owner_id = ?', [ownerId])
+    }
+    db.run('INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)', [userAgent, userId], (err, insertConnectionsRows) => {
+        if (err) {
+            deleteOwner()
+            let return0001003_1 = getResponseJSON("0001003", 'ощибка БД INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)')
+            res.status(200).json(return0001003_1)
+            return returnedValue = return0001003_1 // это для тестирования
+            // 'возврат ошибки при попытке ввести connections"
+        }
+        const connectionId = insertConnectionsRows.insertId
+        const params = { userId, connectionId }
+        const accessToken = getTokenFunction(params, credentials.tokenSecret)(tokenExpire)
+        const refreshToken = getTokenFunction(params, credentials.longTokenSecret)(longTokenExpire)
+
+
+        let return0040000 = {
+            ...getResponseJSON("0040000"),
+            ...{
+                accessToken,
+                refreshToken,
+                ownerId,
+                userId
+            }
+        }
+
+        if (userName) {
+            db.run('UPDATE users SET user_name = ? WHERE user_id = ?', [userName, userId], (err, updateUsersRows) => {
+                if (err) {
+                    deleteOwner()
+                    db.run('DELETE FROM connectons WHERE connection_id = ?', [connectionId])
+                    // console.log('this is addedText', addedText)
+                    let return0001003_2 = getResponseJSON(`0001003`, 'ощибка БД UPDATE users SET user_name = ? WHERE user_id = ?')
+                    res.status(200).json(return0001003_2)
+                    return returnedValue = return0001003_2 // это для тестирования
+                    // 'возврат ошибки при попытке обновить user_name при userName заполненном'
+                }
+
+            })
+            res.status(200).json(return0040000)
+            return returnedValue = return0040000 // это для тестирования
+            // 'возрат токено при userName заполненном'
+        } else {
+            res.status(200).json(return0040000)
+            return returnedValue = return0040000 // это для тестирования
+            // 'возрат токенов при userName пустом'
+        }
+        
+    })
+    return returnedValue // это для тестирования
+}
+
+// это тесты
+if (app.get('env') === 'test') {
+    let appFileTests = require('./lib/customTests/appFileTests')
+    let { runTests } = require('./lib/commonFunctions')
+    runTests(app,
+
+        { fun: appFileTests.deleteDiscriptionRusTest, paramArr: [dataForAPI.responses, deleteDiscriptionRus] },
+
+        { fun: appFileTests.getResponseJSONTest, paramArr: [dataForAPI.responses, getResponseJSON] },
+
+        { fun: appFileTests.addTextInCommentTest, paramArr: [app, addTextInComment] },
+
+        { fun: appFileTests.makeConnectionUpdateUsersReturnJSONtest, paramArr: [getResponseJSON, addTextInComment, getTokenFunction, credentials, tokenExpire, longTokenExpire, makeConnectionUpdateUsersReturnJSON] },
+    )
+}
 // /api/getSMSCodeForRegistrationByTelephone
 app.post('/api/getSMSCodeForRegistrationByTelephone', (req, res, next) => {
     const body = req?.body, telephoneNumber = body?.telephoneNumber
-    if (!telephoneNumber) return res.status(200).json({
-        "result": 'ERR',
-        "description": "the request JSON structure does not match URL",
-        "responseCode": "0001000"
-    })
+    if (!telephoneNumber) return res.status(200).json(getResponseJSON("0001000"))
     // так как в дальнейшем номер телефона потребуется именно в виде строки, то в число преорбазовываю только в нужных местах
     const telephoneNumberLength = telephoneNumber.length
-    if (isNaN(Number(telephoneNumber)) || (telephoneNumberLength < telephoneNumberMin || telephoneNumberLength > telephoneNumberMax)) return res.status(200).json({
-        "result": 'ERR',
-        "description": "telephoneNumber is not format",
-        "responseCode": "0001002",
-    })
+    if (isNaN(Number(telephoneNumber)) || (telephoneNumberLength < telephoneNumberMin || telephoneNumberLength > telephoneNumberMax)) return res.status(200).json(getResponseJSON("0001002"))
     db.run('SELECT * FROM telephones WHERE telephone_number = ?', [telephoneNumber], (err, selectTelephonesRows) => {
         // [] -- данное значение имеет selectTelephonesRows если в базе ничего не найдено
-        if (err || selectTelephonesRows.length > 1) return res.status(200).json({
-            "result": 'ERR',
-            "description": `Something went wrong${addTextInComment('ошибка БД SELECT * FROM telephones WHERE telephone_number = ?')}`,
-            "responseCode": "0001003",
-        })
+        if (err || selectTelephonesRows.length > 1) return res.status(200).json(getResponseJSON('0001003', 'ошибка БД SELECT * FROM telephones WHERE telephone_number = ?'))
         if (!selectTelephonesRows.length) { // это означает, что ранее не было НИ ОДНОГО запроса для этого номера телефона, поэтому можно ничего не проверять
             db.run('INSERT INTO users () VALUE ()', [], (err, insertUsersRows) => {
-                if (err) return res.status(200).json({
-                    "result": 'ERR',
-                    "description": `Something went wrong${addTextInComment('ошибка БД INSERT INTO users () VALUE ()')}`,
-                    "responseCode": "0001003",
-                })
+                if (err) return res.status(200).json(getResponseJSON("0001003", 'ошибка БД INSERT INTO users () VALUE ()'))
                 const userId = insertUsersRows.insertId
                 db.run('INSERT INTO telephones (telephone_number, user_id) VALUES (?, ?)', [telephoneNumber, userId], (err, insertTelephoneRows) => {
                     /* проверка err?.code === "ER_DUP_ENTRY" нужна для того, чтобы исключить создание мусорных user-ов, в случае, когда во время одного запроса к БД, другой запрос успел создать учетную записи. Такое возможно в асинхронном коде  */
                     if (err?.code === "ER_DUP_ENTRY") {
                         db.run('DELETE FROM users WHERE user_id = ?', [userId]) // сюда нужно будет передать функцию которая будет записывать логи с ошибками
-                        return res.status(200).json({
-                            "result": 'ERR',
-                            "description": "This phone number is already registered in the process of registering other requests",
-                            "responseCode": "0011002",
-                        })
+                        return res.status(200).json(getResponseJSON("0011002"))
                     }
-                    if (err) return res.status(200).json({
-                        "result": 'ERR',
-                        "description": `Something went wrong${addTextInComment('ошибка БД INSERT INTO telephones (telephone_number, user_id) VALUES (?, ?)')}`,
-                        "responseCode": "0001003",
-                    })
+                    if (err) return res.status(200).json(getResponseJSON("0001003", 'ошибка БД INSERT INTO telephones (telephone_number, user_id) VALUES (?, ?)'))
                     smsGenerator(req, res, next, insertTelephoneRows.insertId, telephoneNumber, app)
                 })
             })
         } else {
             // такая ситуация, при которой user и его телефон уже существуют, но токена у клиента нет -- возможна, при утрате токена или при запросе первичной СМС, но когда на первую СМС-ку пользователь не отреагировал.
             db.run('SELECT * FROM smscodes WHERE telephone_id = ?', [selectTelephonesRows[0].telephone_id], (err, selectSmsCodeRows) => {
-                if (err) return res.status(200).json({
-                    "result": 'ERR',
-                    "description": `Something went wrong${addTextInComment('ошибка БД SELECT * FROM smscodes WHERE telephone_id = ?')}`,
-                    "responseCode": "0001003",
-                })
-                if (selectSmsCodeRows.length) return res.status(200).json({
-                    "result": 'ERR',
-                    "description": `For this telephone number the SMS request has already been made${addTextInComment('where selectSmsCodeRows.length')}`,
-                    "responseCode": "0011001",
-                })
+                if (err) return res.status(200).json(getResponseJSON("0001003", 'ошибка БД SELECT * FROM smscodes WHERE telephone_id = ?'))
+                if (selectSmsCodeRows.length) return res.status(200).json(getResponseJSON("0011001", 'where selectSmsCodeRows.length'))
                 smsGenerator(req, res, next, selectTelephonesRows[0].telephone_id, telephoneNumber, app)
 
             })
@@ -941,9 +1019,143 @@ app.post('/api/getSMSCodeForRegistrationByTelephone', (req, res, next) => {
 //         })
 //     })
 // })
-app.post('/api/getTokens', (req, res, next) => {
-    const body = req?.body, telephoneNumber = body?.telephoneNumber, smsCode = body?.smsCode
 
+
+app.post('/api/getTokens', (req, res, next) => {
+    const body = req?.body, telephoneNumber = body?.telephoneNumber, smsCode = body?.smsCode, userName = body?.userName
+    // тест готов
+    if (!telephoneNumber || !smsCode) return res.status(200).json(getResponseJSON("0001000"))
+    const telephoneNumberLength = telephoneNumber.length
+    // тест готов
+    if (isNaN(Number(telephoneNumber)) || (telephoneNumberLength < telephoneNumberMin || telephoneNumberLength > telephoneNumberMax)) return res.status(200).json(getResponseJSON('0001002'))
+    // тест готов
+    if (smsCode.length !== smsCodeNumberOfCharacters) return res.status(200).json(getResponseJSON("0041001"))
+    // тест готов
+    if (userName && userName.length > maxLenghtOfUserName) return res.status(200).json(getResponseJSON("0041002"))
+    db.run('SELECT * FROM telephones WHERE telephone_number = ?', [telephoneNumber], (err, selectTelephonesRows) => {
+        if (err || selectTelephonesRows.length > 1) return res.status(200).json(getResponseJSON("0001003", 'ощибка БД SELECT * FROM telephones WHERE telephone_number = ?'))
+        // тест готов
+        if (!selectTelephonesRows.length) return res.status(200).json(getResponseJSON("0041000"))
+        const now = new Date()
+        db.run('SELECT * FROM smscodes WHERE telephone_id = ? AND smscode_timeLastAttempt > ?', [selectTelephonesRows[0].telephone_id, getTimeForMySQL(now.setMilliseconds(now.getMilliseconds() - deleteSmsTime))], (err, selectSmsCodeRows) => {
+            if (err || selectSmsCodeRows.length > 1) return res.status(200).json(getResponseJSON("0001003", 'ощибка БД SELECT * FROM smscodes WHERE telephone_id = ?'))
+            // тест готов
+            if (!selectSmsCodeRows.length) return res.status(200).json(getResponseJSON("0041001", 'в таблице smscodes записи для данного телефона нет'))
+            // tect готов
+            if (selectSmsCodeRows[0].smscode_value != smsCode) return res.status(200).json(getResponseJSON("0041001", 'код смс не соответсвует'))
+            const userId = selectTelephonesRows[0].user_id
+            db.run("SELECT * FROM owners WHERE user_id = ?", [userId], (err, selectOwnersRows) => {
+                if (err) return res.status(200).json(getResponseJSON("0001003", 'ощибка БД SELECT * FROM owners WHERE user_id = ?'))
+
+
+
+                if (!selectOwnersRows.length) {
+                    db.run('INSERT INTO owners (user_id) VALUES (?)', [userId], (err, insertOwnersRows) => {
+                        if (err?.code === "ER_DUP_ENTRY") return res.status(200).json(getResponseJSON("0041002", 'ощибка БД INSERT INTO owners (user_id) VALUES (?)'))
+                        if (err) return res.status(200).json(getResponseJSON("0001003", 'ощибка БД INSERT INTO owners (user_id) VALUES (?)'))
+
+                        // const userAgent = req?.headers['user-agent'] ?? 'Unknown' // от сюда
+                        // db.run('INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)', [userAgent, userId], (err, insertConnectionsRows) => {
+                        //     if (err) {
+
+                        //         db.run('DELETE FROM owners WHERE owner_id = ?', [insertOwnersRows.insertId]) // это обращение к БД нужно сделать опционально
+                        //         return res.status(200).json(getResponseJSON("0001003", addTextInComment('ощибка БД INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)')))
+                        //     }
+                        //     const connectionId = insertConnectionsRows.insertId
+                        //     const params = { userId, connectionId }
+                        //     const accessToken = getTokenFunction(params, credentials.tokenSecret)(tokenExpire)
+                        //     const refreshToken = getTokenFunction(params, credentials.longTokenSecret)(longTokenExpire)
+                        //     const ownerId = insertOwnersRows.insertId // это выражение должно быть selectOwnersRows[0].owner_id хотя оно нужно только для удаления из owners
+
+                        //     let return0040000 = res.status(200).json({
+                        //         ...getResponseJSON("0040000"),
+                        //         ...{
+                        //             accessToken,
+                        //             refreshToken,
+                        //             ownerId,
+                        //             userId
+                        //         }
+                        //     })
+
+
+                        //     if (userName) {
+                        //         db.run('UPDATE users SET user_name = ? WHERE user_id = ?', [userName, userId], (err, updateUsersRows) => {
+                        //             if (err) {
+                        //                 db.run('DELETE FROM owners WHERE owner_id = ?', [ownerId]) // надо проверить нужно ли это в другом условии
+                        //                 db.run('DELETE FROM connectons WHERE connection_id = ?', [connectionId])
+                        //                 return res.status(200).json(getResponseJSON(`0001003`, addTextInComment('ощибка БД UPDATE users SET user_name = ? WHERE user_id = ?')))
+                        //             }
+
+                        //         })
+                        //         return return0040000
+                        //     } else {
+                        //         return return0040000
+                        //     }
+                        // })
+                        // makeConnectionUpdateUsersReturnJSON = (req, res, next, db, getResponseJSON, addTextInComment, getTokenFunction, userId, credentials, tokenExpire, longTokenExpire, userName, objOwnerId)
+                        return makeConnectionUpdateUsersReturnJSON(req, res, next, db, getResponseJSON, addTextInComment, getTokenFunction, userId, credentials, tokenExpire, longTokenExpire, userName, { id: insertOwnersRows.insertId, toDeleteOwner: true })
+                    })
+                } else {
+                    // const userAgent = req?.headers['user-agent'] ?? 'Unknown'
+                    // db.run('INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)', [userAgent, userId], (err, insertConnectionsRows) => {
+                    //     if (err) {
+                    //         return res.status(200).json({
+                    //             "result": 'ERR',
+                    //             "description": `Something went wrong${addTextInComment('ощибка БД INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)')}`,
+                    //             "responseCode": "0001003",
+                    //         })
+                    //     }
+                    //     const connectionId = insertConnectionsRows.insertId
+                    //     const params = { userId, connectionId }
+                    //     const accessToken = getTokenFunction(params, credentials.tokenSecret)(tokenExpire)
+                    //     const refreshToken = getTokenFunction(params, credentials.longTokenSecret)(longTokenExpire)
+                    //     const ownerId = selectOwnersRows[0].owner_id
+                    //     if (userName) {
+                    //         db.run('UPDATE users SET user_name = ? WHERE user_id = ?', [userName, userId], (err, updateUsersRows) => {
+                    //             if (err) {
+                    //                 db.run('DELETE FROM owners WHERE owner_id = ?', [ownerId])
+                    //                 db.run('DELETE FROM connectons WHERE connection_id = ?', [connectionId])
+                    //                 return res.status(200).json({
+                    //                     "result": 'ERR',
+                    //                     "description": `Something went wrong${addTextInComment('ощибка БД UPDATE users SET user_name = ? WHERE user_id = ?')}",
+                    //                     "responseCode": "0001003`,
+                    //                 })
+                    //             }
+
+                    //         })
+                    //         return res.status(200).json(
+                    //             {
+                    //                 "result": 'OK',
+                    //                 "description": "Tokens are get",
+                    //                 "responseCode": "0040000",
+                    //                 accessToken,
+                    //                 refreshToken,
+                    //                 ownerId,
+                    //                 userId
+                    //             }
+                    //         )
+                    //     } else {
+                    //         return res.status(200).json(
+                    //             {
+                    //                 "result": 'OK',
+                    //                 "description": "Tokens are get",
+                    //                 "responseCode": "0040000",
+                    //                 accessToken,
+                    //                 refreshToken,
+                    //                 ownerId,
+                    //                 userId
+                    //             }
+                    //         )
+                    //     }
+                    // })
+                    // return makeConnectionUpdateUsersReturnJSON(req, res, db, userId, credentials, tokenExpire, longTokenExpire, userName, {id: selectOwnersRows[0].owner_id, toDeleteOwner: false })
+                    return makeConnectionUpdateUsersReturnJSON(req, res, next, db, getResponseJSON, addTextInComment, getTokenFunction, userId, credentials, tokenExpire, longTokenExpire, userName, {id: selectOwnersRows[0].owner_id, toDeleteOwner: false })
+                }
+            })
+
+
+        })
+    })
 })
 
 app.post(`/api/checkToken`, (req, res, next) => {
@@ -1210,15 +1422,16 @@ app.get('/tests', (req, res, next) => {
     res.render('tests', { layout: 'test' })
 })
 app.get('/getAPI', (req, res, next) => {
-    
+
     res.render('getAPI', {
 
         layout: 'getAPI',
-        
+
     })
 }) // http://localhost:3000/getAPI
 // http://localhost/getAPI
 // NODE_ENV=production node app_cluster.js
+// NODE_ENV=test node app.js
 // пишу адрес странички чтобы удобней было копировать http://localhost:3000/tests
 // пишу адрес странички чтобы удобней было копировать https://localhost/tests
 // пишу адрес странички чтобы удобней было копировать http://localhost/tests
@@ -1232,6 +1445,13 @@ app.get('/epic-fail', (req, res) => {
         throw new Error('Kaboom!')
     })
     res.send('embarrased')
+})
+app.post('/getTesting', (req, res, next) => {
+    const { input } = req.body
+    let some = {
+        input
+    }
+    res.status(200).json(some)
 })
 // custom 404 page
 app.use((req, res) => {
