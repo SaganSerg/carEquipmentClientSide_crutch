@@ -797,7 +797,7 @@ function buttonClick(id, arr) { /*
     const DOMobject = document.getElementById(id)
     if (!DOMobject) return console.error('There is not the button')
     const isArr = x => typeof arr === 'object' && typeof arr?.length === 'number'
-    
+
     DOMobject.addEventListener('click', (evt) => {
         if (arr) {
             if (!isArr(arr)) return console.error('buttonClick second argument is not array')
@@ -891,7 +891,7 @@ window.addEventListener('load', () => {
                     , thirdThenFun: mockFunction
                     , timeOver: 0
                 },
-            
+
                 // в запросе присутсвует левый токен
                 {
                     uri: checkTokenUri,
@@ -912,13 +912,13 @@ window.addEventListener('load', () => {
                     , thirdThenFun: mockFunction
                     , timeOver: 0
                 },
-            
+
             )
         },
         inputId: 'putOnToken',
         globalObj
     }
-])
+    ])
     buttonClick('getTokensTest', [{
         fun() {
             let smsCode = document.getElementById(this.inputId).value
@@ -969,7 +969,7 @@ window.addEventListener('load', () => {
                 {
                     uri: getTokensUri,
                     body: {
-            
+
                     }
                     , firstThenFun: mockFunction
                     , secondThenFun: (commits) => {
@@ -1001,7 +1001,7 @@ window.addEventListener('load', () => {
                     thirdThenFun: mockFunction,
                     timeOver: 0
                 },
-            
+
                 // в запросе отсутсвует body
                 {
                     uri: getTokensUri,
@@ -1017,10 +1017,10 @@ window.addEventListener('load', () => {
                     thirdThenFun: mockFunction,
                     timeOver: 0
                 },
-            
-            
-            
-            
+
+
+
+
                 // неправильны формат номера телефона
                 {
                     uri: getTokensUri,
@@ -1065,7 +1065,7 @@ window.addEventListener('load', () => {
                     , thirdThenFun: mockFunction
                     , timeOver: 0
                 },
-            
+
                 // неправильны формат номера телефона
                 {
                     uri: getTokensUri,
@@ -1088,7 +1088,7 @@ window.addEventListener('load', () => {
                     , thirdThenFun: mockFunction
                     , timeOver: 0
                 },
-            
+
                 // неправильный размер смс-кода слишком длинный
                 {
                     uri: getTokensUri,
@@ -1111,7 +1111,7 @@ window.addEventListener('load', () => {
                     , thirdThenFun: mockFunction
                     , timeOver: 0
                 },
-            
+
                 // неправильный размер смс-кода слишком короткий
                 {
                     uri: getTokensUri,
@@ -1134,7 +1134,7 @@ window.addEventListener('load', () => {
                     , thirdThenFun: mockFunction
                     , timeOver: 0
                 },
-            
+
                 // длина userName слишком большая
                 {
                     uri: getTokensUri,
@@ -1158,7 +1158,7 @@ window.addEventListener('load', () => {
                     , thirdThenFun: mockFunction
                     , timeOver: 0
                 },
-            
+
                 // указан неправильный телефон, его нет в базе телефонов
                 {
                     uri: getTokensUri,
@@ -1181,8 +1181,9 @@ window.addEventListener('load', () => {
                     , thirdThenFun: mockFunction
                     , timeOver: 0
                 },
-            
+
                 // для данного номера телефона никакой смс-ки нет в базе. Скорее всего это произошло, потому что прострочена отправка
+                // данный тест нужно запускать только после того, как пройдет какое-то время нужное на затирку СМС-ки
                 {
                     uri: getTokensUri,
                     body: {
@@ -1198,13 +1199,15 @@ window.addEventListener('load', () => {
                             "description": "SMS code is wrong",
                             "responseCode": "0041001",
                         }
+                        console.log('responseCode ', responseCode)
+                        console.log('API.responseCode ', API.responseCode)
                         console.log((API.responseCode == responseCode), startOfComment, description, ' в базе отсутствуе телефон для такой смс')
                         return [(API.responseCode == responseCode), `${startOfMessage}  в базе отсутствуе телефон для такой смс`]
                     }
                     , thirdThenFun: mockFunction
                     , timeOver: 0
                 },
-            
+
                 // это левая смс-ка
                 {
                     uri: getTokensUri,
@@ -1227,7 +1230,7 @@ window.addEventListener('load', () => {
                     , thirdThenFun: mockFunction
                     , timeOver: 0
                 },
-            
+
                 // эпто правильное все
                 {
                     uri: getTokensUri,
@@ -1238,14 +1241,68 @@ window.addEventListener('load', () => {
                     }
                     , firstThenFun: mockFunction
                     , secondThenFun: (commits) => {
-                        const { result, description, responseCode } = commits
-                        const API = {
+                        const { result, description, responseCode, accessToken, refreshToken, ownerId, userId, connectedUserAgent } = commits
+                        /* 
+                        {
                             "result": 'OK',
                             "description": "Tokens are get",
                             "responseCode": "0040000",
+                            "accessToken": "",
+                            "refreshToken": "",
+                            "ownerId": 0,
+                            "userId": 0,
+                            "connectedUserAgent": [
+                                {
+                                    "connectedId": 0,
+                                    "connectedUserAgentName": ""
+                                }
+                            ],
+                            "discriptionRus": "Токен передан"
                         }
-                        console.log(API.responseCode, ' -- apt ', responseCode, ' -- ответ')
-                        console.log((API.responseCode == responseCode), startOfComment, description)
+                        */
+                        const API = {
+                            "result": 'OK',
+                            "description": "Tokens are get -- ",
+                            "responseCode": "0040000",
+                            "accessToken": "",
+                            "refreshToken": "",
+                            "ownerId": 0,
+                            "userId": 0,
+                            "connectedUserAgent": [
+                                {
+                                    "connectedId": 0,
+                                    "connectedUserAgentName": ""
+                                }
+                            ]
+                        }
+                        
+                        // console.log(API.responseCode, ' -- apt ', responseCode, ' -- ответ')
+                        // console.log('API.responseCode == responseCode ', API.responseCode == responseCode)
+                        // console.log('API.result == result ', API.result == result)
+                        // console.log('API.description ', API.description)
+                        // console.log('description ', description)
+                        // console.log('API.description == description ', API.description == description)
+                        // console.log('accessToken ', !!accessToken)
+                        // console.log('refreshToken ', !!refreshToken)
+                        // console.log('ownerId ', !!ownerId)
+                        // console.log('userId ', !!userId)
+                        // console.log('connectedUserAgent ', !!connectedUserAgent)
+                        // console.log('typeof connectedUserAgent ', typeof connectedUserAgent)
+                        // console.log('typeof connectedUserAgent == `object` ', typeof connectedUserAgent == 'object')
+                        // console.log('connectedUserAgent.length ', !!connectedUserAgent.length)
+                        // console.log('connectedUserAgent.every ', connectedUserAgent.every(elem => elem.hasOwnProperty('connectedId') && elem.hasOwnProperty('connectedUserAgentName')))
+                        console.log((
+                            API.responseCode == responseCode 
+                            && API.result == result 
+                            && API.description == description 
+                            && accessToken 
+                            && refreshToken 
+                            && ownerId 
+                            && userId 
+                            && connectedUserAgent 
+                            && typeof connectedUserAgent == 'object' 
+                            && connectedUserAgent.length 
+                            && connectedUserAgent.every(elem => elem.hasOwnProperty('connectedId') && elem.hasOwnProperty('connectedUserAgentName'))  ), startOfComment, description)
                         return [(API.responseCode == responseCode), `${startOfMessage}  это все правильное`]
                     }
                     , thirdThenFun: mockFunction
@@ -1261,30 +1318,58 @@ window.addEventListener('load', () => {
                     }
                     , firstThenFun: mockFunction
                     , secondThenFun: (commits) => {
-                        const { result, description, responseCode } = commits
+                        const { result, description, responseCode, accessToken, refreshToken, ownerId, userId, connectedUserAgent } = commits
+                        // const { result, description, responseCode } = commits
+                        // const API = {
+                        //     "result": 'OK',
+                        //     "description": "Tokens are get",
+                        //     "responseCode": "0040000",
+                        // }
                         const API = {
                             "result": 'OK',
-                            "description": "Tokens are get",
+                            "description": "Tokens are get -- ",
                             "responseCode": "0040000",
+                            "accessToken": "",
+                            "refreshToken": "",
+                            "ownerId": 0,
+                            "userId": 0,
+                            "connectedUserAgent": [
+                                {
+                                    "connectedId": 0,
+                                    "connectedUserAgentName": ""
+                                }
+                            ]
                         }
-                        console.log((API.responseCode == responseCode), startOfComment, description)
+                        // console.log((API.responseCode == responseCode), startOfComment, description)
+                        console.log((
+                            API.responseCode == responseCode 
+                            && API.result == result 
+                            && API.description == description 
+                            && accessToken 
+                            && refreshToken 
+                            && ownerId 
+                            && userId 
+                            && connectedUserAgent 
+                            && typeof connectedUserAgent == 'object' 
+                            && connectedUserAgent.length 
+                            && connectedUserAgent.every(elem => elem.hasOwnProperty('connectedId') && elem.hasOwnProperty('connectedUserAgentName'))  ), startOfComment, description)
                         return [(API.responseCode == responseCode), `${startOfMessage}  это все правильное`]
                     }
                     , thirdThenFun: mockFunction
                     , timeOver: 0
                 }
-            
+
             )
         },
         inputId: 'gettokensmscode',
         globalObj
     }
-        
+
     ])
 
     buttonClick("getTesting", [
         {
-            fun(){
+            fun() {
                 let input = document.getElementById(this.inputId).value
                 this.globalObj.getTesting.push({ // когда был push то все работало
                     uri: getTestingUri,
@@ -1294,14 +1379,14 @@ window.addEventListener('load', () => {
                     , firstThenFun: mockFunction
                     , secondThenFun: (commits) => {
                         const { input } = commits
-                        
+
                         console.log(input, ' this is input')
                         return [1]
                     }
                     , thirdThenFun: mockFunction
                     , timeOver: 0
                 })
-            }, 
+            },
             inputId: 'putDataTesting',
             globalObj
         }

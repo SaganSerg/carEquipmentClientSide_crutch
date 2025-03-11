@@ -30,7 +30,7 @@ const express = require('express')
     , jwt = require('jsonwebtoken')
     , nodemailer = require('nodemailer')
     , cookieParser = require('cookie-parser')
-    , handlers = require('./lib/handlers')
+    // , handlers = require('./lib/handlers')
     , smsGenerator = require('./lib/smsGenerator').generator
     , morgan = require('morgan')
     , fs = require('fs')
@@ -411,15 +411,15 @@ app.use(session({
 // app.use(passport.authenticate('session')); // c этим все работало
 app.use(bodyParser.urlencoded({ extended: true }))
 
-app.get('/', passport.authenticate('session'), handlers.homeGet)
+// app.get('/', passport.authenticate('session'), handlers.homeGet)
 
-app.get('/login', passport.authenticate('session'), handlers.loginGet)
+// app.get('/login', passport.authenticate('session'), handlers.loginGet)
 // app.post('/login/password', passport.authenticate('local', {
 //     successRedirect: '/',
 //     failureRedirect: '/login'
 // }));
 // let username = req.user ? req.user.username : 'Не актуализирован'
-app.post('/login/password', passport.authenticate('local', { failureRedirect: '/login' }), handlers.loginPasswordPost)
+// app.post('/login/password', passport.authenticate('local', { failureRedirect: '/login' }), handlers.loginPasswordPost)
 /* 
 Это то что в req.user
 Похоже полностью повторяет то, что хранистя в БД
@@ -434,9 +434,9 @@ app.post('/login/password', passport.authenticate('local', { failureRedirect: '/
   delete_: 0
 }
 */
-app.post('/logout', passport.authenticate('session'), handlers.logoutPost)
+// app.post('/logout', passport.authenticate('session'), handlers.logoutPost)
 
-app.get('/signup', passport.authenticate('session'), handlers.signupGet)
+// app.get('/signup', passport.authenticate('session'), handlers.signupGet)
 /* 
 Вот что сохраняется в БД в таблице sessions
 
@@ -484,7 +484,7 @@ router.post('/signup', function(req, res, next) {
 });
 
 */
-app.post('/signup', passport.authenticate('session'), handlers.signupPost)
+// app.post('/signup', passport.authenticate('session'), handlers.signupPost)
 /* 
 rows INSERT
 
@@ -579,7 +579,7 @@ let getResponseJSON = (responseCode, comment) => {
 /* objOwnerId = {id, toDeleteOwner}
 example {id: insertOwnersRows.insertId, toDeleteOwner: true } {id: selectOwnersRows[0].owner_id, toDeleteOwner: false } */
 let makeConnectionUpdateUsersReturnJSON = (req, res, next, db, getResponseJSON, addTextInComment, getTokenFunction, userId, credentials, tokenExpire, longTokenExpire, userName, objOwnerId) => {
-    let returnedValue // это для тестирования
+    let returnedValue = 'unchanged' // это для тестирования
     const userAgent = req?.headers['user-agent'] ?? 'Unknown'
     const ownerId = objOwnerId.id
     const deleteOwner = () => {
@@ -597,40 +597,59 @@ let makeConnectionUpdateUsersReturnJSON = (req, res, next, db, getResponseJSON, 
         const params = { userId, connectionId }
         const accessToken = getTokenFunction(params, credentials.tokenSecret)(tokenExpire)
         const refreshToken = getTokenFunction(params, credentials.longTokenSecret)(longTokenExpire)
-
-
-        let return0040000 = {
-            ...getResponseJSON("0040000"),
-            ...{
-                accessToken,
-                refreshToken,
-                ownerId,
-                userId
+        db.run('SELECT connection_userAgent, connection_id FROM connections WHERE user_id = ?', [userId], (err, selectConnectionsUserID ) => {
+            if (err) {
+                let return0001003_3 = res.status(200).json(getResponseJSON('0001003', 'ошибка БД SELECT connection_userAgent, connection_id FROM connections WHERE user_id = ?'))
+                return returnedValue = return0001003_3
             }
-        }
-
-        if (userName) {
-            db.run('UPDATE users SET user_name = ? WHERE user_id = ?', [userName, userId], (err, updateUsersRows) => {
-                if (err) {
-                    deleteOwner()
-                    db.run('DELETE FROM connectons WHERE connection_id = ?', [connectionId])
-                    // console.log('this is addedText', addedText)
-                    let return0001003_2 = getResponseJSON(`0001003`, 'ощибка БД UPDATE users SET user_name = ? WHERE user_id = ?')
-                    res.status(200).json(return0001003_2)
-                    return returnedValue = return0001003_2 // это для тестирования
-                    // 'возврат ошибки при попытке обновить user_name при userName заполненном'
-                }
-
+            /* 
+            "connectedUserAgent": [
+            {
+                "connectedId": 0,
+                "connectedUserAgentName": ""
+            }
+            ],
+            */
+           const connectedUserAgent = []
+           selectConnectionsUserID.forEach(elem => {
+            connectedUserAgent.push({
+                connectedId: elem.connection_id,
+                connectedUserAgentName: elem.connection_userAgent
             })
-            res.status(200).json(return0040000)
-            return returnedValue = return0040000 // это для тестирования
-            // 'возрат токено при userName заполненном'
-        } else {
-            res.status(200).json(return0040000)
-            return returnedValue = return0040000 // это для тестирования
-            // 'возрат токенов при userName пустом'
-        }
-        
+           })
+            let return0040000 = {
+                ...getResponseJSON("0040000"),
+                ...{
+                    accessToken,
+                    refreshToken,
+                    ownerId,
+                    userId,
+                    connectedUserAgent
+                }
+            }
+            if (userName) {
+                db.run('UPDATE users SET user_name = ? WHERE user_id = ?', [userName, userId], (err, updateUsersRows) => {
+                    if (err) {
+                        deleteOwner()
+                        db.run('DELETE FROM connectons WHERE connection_id = ?', [connectionId])
+                        // console.log('this is addedText', addedText)
+                        let return0001003_2 = getResponseJSON(`0001003`, 'ощибка БД UPDATE users SET user_name = ? WHERE user_id = ?')
+                        res.status(200).json(return0001003_2)
+                        return returnedValue = return0001003_2 // это для тестирования
+                        // 'возврат ошибки при попытке обновить user_name при userName заполненном'
+                    }
+    
+                })
+                res.status(200).json(return0040000)
+                return returnedValue = return0040000 // это для тестирования
+                // 'возрат токено при userName заполненном'
+            } else {
+                res.status(200).json(return0040000)
+                return returnedValue = return0040000 // это для тестирования
+                // 'возрат токенов при userName пустом'
+            }
+
+        })
     })
     return returnedValue // это для тестирования
 }
@@ -686,341 +705,6 @@ app.post('/api/getSMSCodeForRegistrationByTelephone', (req, res, next) => {
     })
 })
 
-// app.post('/api/telephoneOwnerRegistration', (req, res, next) => {
-//     const body = req?.body, telephoneNumber = body?.telephoneNumber, smsCode = body?.smsCode, userName = body?.userName
-//     // тест готов
-//     if (!telephoneNumber || !smsCode) return res.status(200).json({
-//         "result": 'ERR',
-//         "description": "the request JSON structure does not match URL",
-//         "responseCode": "0001000"
-//     })
-//     const telephoneNumberLength = telephoneNumber.length
-//     // тест готов
-//     if (isNaN(Number(telephoneNumber)) || (telephoneNumberLength < telephoneNumberMin || telephoneNumberLength > telephoneNumberMax)) return res.status(200).json({
-//         "result": 'ERR',
-//         "description": "telephoneNumber is not format",
-//         "responseCode": "0001002",
-//     })
-//     // тест готов
-//     if (smsCode.length !== smsCodeNumberOfCharacters) return res.status(200).json({
-//         "result": 'ERR',
-//         "description": `SMS code is wrong${addTextInComment('длина кода не равна должной')}`,
-//         "responseCode": "0021001",
-//     })
-//     // тест готов
-//     if (userName && userName.length > maxLenghtOfUserName) return res.status(200).json({
-//         "result": 'ERR',
-//         "description": "Username is too long",
-//         "responseCode": "0021002",
-//     })
-//     db.run('SELECT * FROM telephones WHERE telephone_number = ?', [telephoneNumber], (err, selectTelephonesRows) => {
-//         if (err || selectTelephonesRows.length > 1) return res.status(200).json({
-//             "result": 'ERR',
-//             "description": `Something went wrong${addTextInComment('ощибка БД SELECT * FROM telephones WHERE telephone_number = ?')}`,
-//             "responseCode": "0001003",
-//         })
-//         // тест готов
-//         if (!selectTelephonesRows.length) return res.status(200).json({
-//             "result": 'ERR',
-//             "description": "telephoneNumber is not registration",
-//             "responseCode": "0021000",
-//         })
-//         const now = new Date()
-//         db.run('SELECT * FROM smscodes WHERE telephone_id = ? AND smscode_timeLastAttempt > ?', [selectTelephonesRows[0].telephone_id, getTimeForMySQL(now.setMilliseconds(now.getMilliseconds() - deleteSmsTime))], (err, selectSmsCodeRows) => {
-//             if (err || selectSmsCodeRows.length > 1) return res.status(200).json({
-//                 "result": 'ERR',
-//                 "description": `Something went wrong${addTextInComment('ощибка БД SELECT * FROM smscodes WHERE telephone_id = ?')}`,
-//                 "responseCode": "0001003",
-//             })
-
-//             // тест готов
-//             if (!selectSmsCodeRows.length) return res.status(200).json({
-//                 "result": 'ERR',
-//                 "description": `SMS code is wrong${addTextInComment('в таблице smscodes записи для данного телефона нет')}`,
-//                 "responseCode": "0021001",
-//             })
-
-//             // tect готов
-//             console.log('this is a smscode from rows')
-//             console.log(selectSmsCodeRows[0].smscode_value)
-//             console.log('this is SMScode from request')
-//             console.log(smsCode)
-//             if (selectSmsCodeRows[0].smscode_value != smsCode) return res.status(200).json({
-//                 "result": 'ERR',
-//                 "description": `SMS code is wrong${addTextInComment('код смс не соответсвует')}`,
-//                 "responseCode": "0021001",
-//             })
-//             const userId = selectTelephonesRows[0].user_id
-//             db.run('INSERT INTO owners (user_id) VALUES (?)', [userId], (err, insertOwnersRows) => {
-//                 if (err?.code === "ER_DUP_ENTRY") {
-//                     return res.status(200).json({
-//                         "result": 'ERR',
-//                         "description": "the owner was already registered",
-//                         "responseCode": "0021002",
-//                     })
-//                 }
-//                 if (err) return res.status(200).json({
-//                     "result": 'ERR',
-//                     "description": `Something went wrong${addTextInComment('ощибка БД INSERT INTO owners (user_id) VALUES (?)')}`,
-//                     "responseCode": "0001003",
-//                 })
-//                 const userAgent = req?.headers['user-agent'] ?? 'Unknown'
-//                 db.run('INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)', [userAgent, userId], (err, insertConnectionsRows) => {
-//                     if (err) {
-//                         db.run('DELETE FROM owners WHERE owner_id = ?', [insertOwnersRows.insertId])
-//                         return res.status(200).json({
-//                             "result": 'ERR',
-//                             "description": `Something went wrong${addTextInComment('ощибка БД INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)')}`,
-//                             "responseCode": "0001003",
-//                         })
-//                     }
-//                     const connectionId = insertConnectionsRows.insertId
-//                     const params = { userId, connectionId }
-//                     const accessToken = getTokenFunction(params, credentials.tokenSecret)(tokenExpire)
-//                     const refreshToken = getTokenFunction(params, credentials.longTokenSecret)(longTokenExpire)
-//                     const ownerId = insertOwnersRows.insertId
-//                     if (userName) {
-//                         db.run('UPDATE users SET user_name = ? WHERE user_id = ?', [userName, userId], (err, updateUsersRows) => {
-//                             if (err) {
-//                                 db.run('DELETE FROM owners WHERE owner_id = ?', [ownerId])
-//                                 db.run('DELETE FROM connectons WHERE connection_id = ?', [connectionId])
-//                                 return res.status(200).json({
-//                                     "result": 'ERR',
-//                                     "description": `Something went wrong${addTextInComment('ощибка БД UPDATE users SET user_name = ? WHERE user_id = ?')}",
-//                                     "responseCode": "0001003`,
-//                                 })
-//                             }
-
-//                         })
-//                         return res.status(200).json(
-//                             {
-//                                 "result": 'OK',
-//                                 "description": "Owner is registered by telephone",
-//                                 "responseCode": "0020000",
-//                                 accessToken,
-//                                 refreshToken,
-//                                 ownerId,
-//                                 userId
-//                             }
-//                         )
-//                     } else {
-//                         return res.status(200).json(
-//                             {
-//                                 "result": 'OK',
-//                                 "description": "Owner is registered by telephone",
-//                                 "responseCode": "0020000",
-//                                 accessToken,
-//                                 refreshToken,
-//                                 ownerId,
-//                                 userId
-//                             }
-//                         )
-//                     }
-//                 })
-//             })
-//         })
-//     })
-// })
-
-// app.post('/api/getTokens', (req, res, next) => {
-//     const body = req?.body, telephoneNumber = body?.telephoneNumber, smsCode = body?.smsCode, userName = body?.userName
-//     // тест готов
-//     if (!telephoneNumber || !smsCode) return res.status(200).json({
-//         "result": 'ERR',
-//         "description": "the request JSON structure does not match URL",
-//         "responseCode": "0001000"
-//     })
-//     const telephoneNumberLength = telephoneNumber.length
-//     // тест готов
-//     if (isNaN(Number(telephoneNumber)) || (telephoneNumberLength < telephoneNumberMin || telephoneNumberLength > telephoneNumberMax)) return res.status(200).json({
-//         "result": 'ERR',
-//         "description": "telephoneNumber is not format",
-//         "responseCode": "0001002",
-//     })
-//     // тест готов
-//     if (smsCode.length !== smsCodeNumberOfCharacters) return res.status(200).json({
-//         "result": 'ERR',
-//         "description": `SMS code is wrong${addTextInComment('длина кода не равна должной')}`,
-//         "responseCode": "0041001",
-//     })
-//     // тест готов
-//     if (userName && userName.length > maxLenghtOfUserName) return res.status(200).json({
-//         "result": 'ERR',
-//         "description": "Username is too long",
-//         "responseCode": "0041002",
-//     })
-//     db.run('SELECT * FROM telephones WHERE telephone_number = ?', [telephoneNumber], (err, selectTelephonesRows) => {
-//         if (err || selectTelephonesRows.length > 1) return res.status(200).json({
-//             "result": 'ERR',
-//             "description": `Something went wrong${addTextInComment('ощибка БД SELECT * FROM telephones WHERE telephone_number = ?')}`,
-//             "responseCode": "0001003",
-//         })
-//         // тест готов
-//         if (!selectTelephonesRows.length) return res.status(200).json({
-//             "result": 'ERR',
-//             "description": "telephoneNumber is not registration",
-//             "responseCode": "0041000",
-//         })
-//         const now = new Date()
-//         db.run('SELECT * FROM smscodes WHERE telephone_id = ? AND smscode_timeLastAttempt > ?', [selectTelephonesRows[0].telephone_id, getTimeForMySQL(now.setMilliseconds(now.getMilliseconds() - deleteSmsTime))], (err, selectSmsCodeRows) => {
-//             if (err || selectSmsCodeRows.length > 1) return res.status(200).json({
-//                 "result": 'ERR',
-//                 "description": `Something went wrong${addTextInComment('ощибка БД SELECT * FROM smscodes WHERE telephone_id = ?')}`,
-//                 "responseCode": "0001003",
-//             })
-
-//             // тест готов
-//             if (!selectSmsCodeRows.length) return res.status(200).json({
-//                 "result": 'ERR',
-//                 "description": `SMS code is wrong${addTextInComment('в таблице smscodes записи для данного телефона нет')}`,
-//                 "responseCode": "0041001",
-//             })
-
-//             // tect готов
-//             if (selectSmsCodeRows[0].smscode_value != smsCode) return res.status(200).json({
-//                 "result": 'ERR',
-//                 "description": `SMS code is wrong${addTextInComment('код смс не соответсвует')}`,
-//                 "responseCode": "0041001",
-//             })
-//             const userId = selectTelephonesRows[0].user_id
-//             db.run("SELECT * FROM owners WHERE user_id = ?", [userId], (err, selectOwnersRows) => {
-//                 if (err) return res.status(200).json({
-//                     "result": 'ERR',
-//                     "description": `Something went wrong${addTextInComment('ощибка БД SELECT * FROM owners WHERE user_id = ?')}`,
-//                     "responseCode": "0001003",
-//                 })
-//                 if (!selectOwnersRows.length) {
-//                     db.run('INSERT INTO owners (user_id) VALUES (?)', [userId], (err, insertOwnersRows) => {
-//                         if (err?.code === "ER_DUP_ENTRY") {
-//                             return res.status(200).json({
-//                                 "result": 'ERR',
-//                                 "description": "the owner was already registered",
-//                                 "responseCode": "0041002",
-//                             })
-//                         }
-//                         if (err) return res.status(200).json({
-//                             "result": 'ERR',
-//                             "description": `Something went wrong${addTextInComment('ощибка БД INSERT INTO owners (user_id) VALUES (?)')}`,
-//                             "responseCode": "0001003",
-//                         })
-
-//                         const userAgent = req?.headers['user-agent'] ?? 'Unknown'
-//                         db.run('INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)', [userAgent, userId], (err, insertConnectionsRows) => {
-//                             if (err) {
-//                                 db.run('DELETE FROM owners WHERE owner_id = ?', [insertOwnersRows.insertId])
-//                                 return res.status(200).json({
-//                                     "result": 'ERR',
-//                                     "description": `Something went wrong${addTextInComment('ощибка БД INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)')}`,
-//                                     "responseCode": "0001003",
-//                                 })
-//                             }
-//                             const connectionId = insertConnectionsRows.insertId
-//                             const params = { userId, connectionId }
-//                             const accessToken = getTokenFunction(params, credentials.tokenSecret)(tokenExpire)
-//                             const refreshToken = getTokenFunction(params, credentials.longTokenSecret)(longTokenExpire)
-//                             const ownerId = insertOwnersRows.insertId
-//                             if (userName) {
-//                                 db.run('UPDATE users SET user_name = ? WHERE user_id = ?', [userName, userId], (err, updateUsersRows) => {
-//                                     if (err) {
-//                                         db.run('DELETE FROM owners WHERE owner_id = ?', [ownerId])
-//                                         db.run('DELETE FROM connectons WHERE connection_id = ?', [connectionId])
-//                                         return res.status(200).json({
-//                                             "result": 'ERR',
-//                                             "description": `Something went wrong${addTextInComment('ощибка БД UPDATE users SET user_name = ? WHERE user_id = ?')}",
-//                                             "responseCode": "0001003`,
-//                                         })
-//                                     }
-
-//                                 })
-//                                 return res.status(200).json(
-//                                     {
-//                                         "result": 'OK',
-//                                         "description": "Tokens are get",
-//                                         "responseCode": "0040000",
-//                                         accessToken,
-//                                         refreshToken,
-//                                         ownerId,
-//                                         userId
-//                                     }
-//                                 )
-//                             } else {
-//                                 return res.status(200).json(
-//                                     {
-//                                         "result": 'OK',
-//                                         "description": "Tokens are get",
-//                                         "responseCode": "0040000",
-//                                         accessToken,
-//                                         refreshToken,
-//                                         ownerId,
-//                                         userId
-//                                     }
-//                                 )
-//                             }
-//                         })
-
-//                     })
-//                 } else {
-//                     const userAgent = req?.headers['user-agent'] ?? 'Unknown'
-//                     db.run('INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)', [userAgent, userId], (err, insertConnectionsRows) => {
-//                         if (err) {
-//                             return res.status(200).json({
-//                                 "result": 'ERR',
-//                                 "description": `Something went wrong${addTextInComment('ощибка БД INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)')}`,
-//                                 "responseCode": "0001003",
-//                             })
-//                         }
-//                         const connectionId = insertConnectionsRows.insertId
-//                         const params = { userId, connectionId }
-//                         const accessToken = getTokenFunction(params, credentials.tokenSecret)(tokenExpire)
-//                         const refreshToken = getTokenFunction(params, credentials.longTokenSecret)(longTokenExpire)
-//                         const ownerId = selectOwnersRows[0].owner_id
-//                         if (userName) {
-//                             db.run('UPDATE users SET user_name = ? WHERE user_id = ?', [userName, userId], (err, updateUsersRows) => {
-//                                 if (err) {
-//                                     db.run('DELETE FROM owners WHERE owner_id = ?', [ownerId])
-//                                     db.run('DELETE FROM connectons WHERE connection_id = ?', [connectionId])
-//                                     return res.status(200).json({
-//                                         "result": 'ERR',
-//                                         "description": `Something went wrong${addTextInComment('ощибка БД UPDATE users SET user_name = ? WHERE user_id = ?')}",
-//                                         "responseCode": "0001003`,
-//                                     })
-//                                 }
-
-//                             })
-//                             return res.status(200).json(
-//                                 {
-//                                     "result": 'OK',
-//                                     "description": "Tokens are get",
-//                                     "responseCode": "0040000",
-//                                     accessToken,
-//                                     refreshToken,
-//                                     ownerId,
-//                                     userId
-//                                 }
-//                             )
-//                         } else {
-//                             return res.status(200).json(
-//                                 {
-//                                     "result": 'OK',
-//                                     "description": "Tokens are get",
-//                                     "responseCode": "0040000",
-//                                     accessToken,
-//                                     refreshToken,
-//                                     ownerId,
-//                                     userId
-//                                 }
-//                             )
-//                         }
-//                     })
-//                 }
-//             })
-
-
-//         })
-//     })
-// })
-
-
 app.post('/api/getTokens', (req, res, next) => {
     const body = req?.body, telephoneNumber = body?.telephoneNumber, smsCode = body?.smsCode, userName = body?.userName
     // тест готов
@@ -1046,114 +730,16 @@ app.post('/api/getTokens', (req, res, next) => {
             const userId = selectTelephonesRows[0].user_id
             db.run("SELECT * FROM owners WHERE user_id = ?", [userId], (err, selectOwnersRows) => {
                 if (err) return res.status(200).json(getResponseJSON("0001003", 'ощибка БД SELECT * FROM owners WHERE user_id = ?'))
-
-
-
                 if (!selectOwnersRows.length) {
                     db.run('INSERT INTO owners (user_id) VALUES (?)', [userId], (err, insertOwnersRows) => {
                         if (err?.code === "ER_DUP_ENTRY") return res.status(200).json(getResponseJSON("0041002", 'ощибка БД INSERT INTO owners (user_id) VALUES (?)'))
                         if (err) return res.status(200).json(getResponseJSON("0001003", 'ощибка БД INSERT INTO owners (user_id) VALUES (?)'))
-
-                        // const userAgent = req?.headers['user-agent'] ?? 'Unknown' // от сюда
-                        // db.run('INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)', [userAgent, userId], (err, insertConnectionsRows) => {
-                        //     if (err) {
-
-                        //         db.run('DELETE FROM owners WHERE owner_id = ?', [insertOwnersRows.insertId]) // это обращение к БД нужно сделать опционально
-                        //         return res.status(200).json(getResponseJSON("0001003", addTextInComment('ощибка БД INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)')))
-                        //     }
-                        //     const connectionId = insertConnectionsRows.insertId
-                        //     const params = { userId, connectionId }
-                        //     const accessToken = getTokenFunction(params, credentials.tokenSecret)(tokenExpire)
-                        //     const refreshToken = getTokenFunction(params, credentials.longTokenSecret)(longTokenExpire)
-                        //     const ownerId = insertOwnersRows.insertId // это выражение должно быть selectOwnersRows[0].owner_id хотя оно нужно только для удаления из owners
-
-                        //     let return0040000 = res.status(200).json({
-                        //         ...getResponseJSON("0040000"),
-                        //         ...{
-                        //             accessToken,
-                        //             refreshToken,
-                        //             ownerId,
-                        //             userId
-                        //         }
-                        //     })
-
-
-                        //     if (userName) {
-                        //         db.run('UPDATE users SET user_name = ? WHERE user_id = ?', [userName, userId], (err, updateUsersRows) => {
-                        //             if (err) {
-                        //                 db.run('DELETE FROM owners WHERE owner_id = ?', [ownerId]) // надо проверить нужно ли это в другом условии
-                        //                 db.run('DELETE FROM connectons WHERE connection_id = ?', [connectionId])
-                        //                 return res.status(200).json(getResponseJSON(`0001003`, addTextInComment('ощибка БД UPDATE users SET user_name = ? WHERE user_id = ?')))
-                        //             }
-
-                        //         })
-                        //         return return0040000
-                        //     } else {
-                        //         return return0040000
-                        //     }
-                        // })
-                        // makeConnectionUpdateUsersReturnJSON = (req, res, next, db, getResponseJSON, addTextInComment, getTokenFunction, userId, credentials, tokenExpire, longTokenExpire, userName, objOwnerId)
                         return makeConnectionUpdateUsersReturnJSON(req, res, next, db, getResponseJSON, addTextInComment, getTokenFunction, userId, credentials, tokenExpire, longTokenExpire, userName, { id: insertOwnersRows.insertId, toDeleteOwner: true })
                     })
                 } else {
-                    // const userAgent = req?.headers['user-agent'] ?? 'Unknown'
-                    // db.run('INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)', [userAgent, userId], (err, insertConnectionsRows) => {
-                    //     if (err) {
-                    //         return res.status(200).json({
-                    //             "result": 'ERR',
-                    //             "description": `Something went wrong${addTextInComment('ощибка БД INSERT INTO connections (connection_userAgent, user_id) VALUES (?, ?)')}`,
-                    //             "responseCode": "0001003",
-                    //         })
-                    //     }
-                    //     const connectionId = insertConnectionsRows.insertId
-                    //     const params = { userId, connectionId }
-                    //     const accessToken = getTokenFunction(params, credentials.tokenSecret)(tokenExpire)
-                    //     const refreshToken = getTokenFunction(params, credentials.longTokenSecret)(longTokenExpire)
-                    //     const ownerId = selectOwnersRows[0].owner_id
-                    //     if (userName) {
-                    //         db.run('UPDATE users SET user_name = ? WHERE user_id = ?', [userName, userId], (err, updateUsersRows) => {
-                    //             if (err) {
-                    //                 db.run('DELETE FROM owners WHERE owner_id = ?', [ownerId])
-                    //                 db.run('DELETE FROM connectons WHERE connection_id = ?', [connectionId])
-                    //                 return res.status(200).json({
-                    //                     "result": 'ERR',
-                    //                     "description": `Something went wrong${addTextInComment('ощибка БД UPDATE users SET user_name = ? WHERE user_id = ?')}",
-                    //                     "responseCode": "0001003`,
-                    //                 })
-                    //             }
-
-                    //         })
-                    //         return res.status(200).json(
-                    //             {
-                    //                 "result": 'OK',
-                    //                 "description": "Tokens are get",
-                    //                 "responseCode": "0040000",
-                    //                 accessToken,
-                    //                 refreshToken,
-                    //                 ownerId,
-                    //                 userId
-                    //             }
-                    //         )
-                    //     } else {
-                    //         return res.status(200).json(
-                    //             {
-                    //                 "result": 'OK',
-                    //                 "description": "Tokens are get",
-                    //                 "responseCode": "0040000",
-                    //                 accessToken,
-                    //                 refreshToken,
-                    //                 ownerId,
-                    //                 userId
-                    //             }
-                    //         )
-                    //     }
-                    // })
-                    // return makeConnectionUpdateUsersReturnJSON(req, res, db, userId, credentials, tokenExpire, longTokenExpire, userName, {id: selectOwnersRows[0].owner_id, toDeleteOwner: false })
                     return makeConnectionUpdateUsersReturnJSON(req, res, next, db, getResponseJSON, addTextInComment, getTokenFunction, userId, credentials, tokenExpire, longTokenExpire, userName, {id: selectOwnersRows[0].owner_id, toDeleteOwner: false })
                 }
             })
-
-
         })
     })
 })

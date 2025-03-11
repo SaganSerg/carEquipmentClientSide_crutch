@@ -6,9 +6,9 @@
     </legend>
     <label class="buttonTest">
         This is an error in sms-service
+        <div>Comment: this test must run at test environment. NODE_ENV=test node app_cluster.js</div>
         <button id="getSMSserviceSMSErrTest" data-testSet="getSMSserviceSMSErrTest">
             Launch test.
-            Comment: this test must run at test environment. NODE_ENV=test node app_cluster.js
         </button>
     </label>
     <label class="buttonTest">
@@ -80,22 +80,6 @@
         </button>
     </label>
 </fieldset>
-
-
-{{!-- <script src="/js/tests/start.js"></script>
-<script src="/js/tests/ownerRegistrationStart.js"></script>
-<script src="/js/tests/ownerRegistrationOldSMSTest.js"></script>
-<script src="/js/tests/ownerRegistrationTest.js"></script>
-<script src="/js/tests/getSMSStart.js"></script>
-<script src="/js/tests/getSMSserviceSMSErrTest.js"></script>
-<script src="/js/tests/getSMSRealErrTest.js"></script>
-<script src="/js/tests/getSMSTest.js"></script>
-<script src="/js/tests/checkTokenStart.js"></script>
-<script src="/js/tests/checkTokenTest.js"></script>
-<script src="/js/tests/getTokensStart.js"></script>
-<script src="/js/tests/getTokensTest.js"></script>
-<script src="/js/tests/finish.js"></script> --}}
-
 <script type="module">
     import "./js/tests/test.js"
 </script>
